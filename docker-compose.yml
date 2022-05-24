@@ -1,0 +1,43 @@
+version: '3.4' 
+
+services:
+
+  bikes:
+    image: bikes:latest
+    build:
+      context: samples/BikeSharingApp/Bikes
+
+  bikeSharingWeb:
+      image: bikesharingweb:latest
+      build:
+        context: samples/BikeSharingApp/BikeSharingWeb
+  
+  billing:
+    image: billing:latest
+    build:
+      context: samples/BikeSharingApp/Billing
+
+  gateway:
+      image: gateway:latest
+      build:
+        context: samples/BikeSharingApp/Gateway
+
+  reservation:
+    image: reservation:latest
+    build:
+      context: samples/BikeSharingApp/Reservation
+
+  reservationEngine:
+      image: reservationengine:latest
+      build:
+        context: samples/BikeSharingApp/ReservationEngine
+  
+  users:
+    image: users:latest
+    build:
+      context: samples/BikeSharingApp/Users
+
+  populateDatabase:
+      image: populatedatabase:latest
+      build:
+        context: samples/BikeSharingApp/PopulateDatabase
