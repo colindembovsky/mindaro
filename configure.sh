@@ -29,16 +29,15 @@ kubectl port-forward $(kubectl get pods --selector "app.kubernetes.io/name=traef
 
 
 # install chart
-# get IP of codespace using ping
-export NIPIOFQDN="colindembovsky-mindaro-4vq99grfq65w-8080.githubpreview.dev.52.143.76.60.nip.io"
-
 helm dependency build "$CHARTDIR"
 helm install bikesharingapp "$CHARTDIR" \
-   --set bikesharingweb.ingress.hosts={$BIKENS.bikesharingweb.$NIPIOFQDN} \
-   --set gateway.ingress.hosts={$BIKENS.gateway.$NIPIOFQDN} \
+   --set bikesharingweb.ingress.hosts={$fqdn} \
    --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
-   --set gateway.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
    --dependency-update \
    --namespace $BIKENS \
    --timeout 9m \
    --atomic $HELMARGS
+
+# test API
+curl -iH"Host: $fqdn" http://localhost:8080/api/bike/availableBikes
+# test web

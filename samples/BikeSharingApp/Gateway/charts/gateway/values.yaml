@@ -22,7 +22,7 @@ probes:
   enabled: false
 
 ingress:
-  enabled: true
+  enabled: false
   annotations:
     kubernetes.io/ingress.class: traefik
   path: /
@@ -32,6 +32,12 @@ ingress:
     # - secretName: chart-example-tls
     #   hosts:
     #     - chart-example.local
+
+ingressRoute:
+  enabled: true
+  path: /api
+  stripPrefix: true
+  
 secrets:
   users:
     dnsname: users

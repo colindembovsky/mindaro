@@ -1,0 +1,11 @@
+{{- if .Values.ingressRoute.stripPrefix -}}
+{{- $fullName := include "gateway.fullname" . -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}-stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - {{ .Values.ingressRoute.path }}
+{{- end }}

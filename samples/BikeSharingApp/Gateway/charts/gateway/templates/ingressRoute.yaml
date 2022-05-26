@@ -1,0 +1,30 @@
+{{- if .Values.ingressRoute.enabled -}}
+{{- $fullName := include "gateway.fullname" . -}}
+{{- $servicePort := .Values.service.port -}}
+{{- $ingressPath := .Values.ingressRoute.path -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}-{{ $fullName }}
+  labels:
+    app: {{ template "gateway.name" . }}
+    chart: {{ template "gateway.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  entryPoints:
+  - web
+  - websecure
+  routes:
+  - kind: Rule
+    match: PathPrefix(`{{ .Values.ingressRoute.path }}`)
+    {{- if .Values.ingressRoute.stripPrefix }}
+    middlewares:
+    - name: {{ $fullName }}-stripprefix
+    {{- end }}
+    services:
+    - kind: Service
+      name: {{ $fullName }}
+      passHostHeader: true
+      port: {{ $servicePort }}
+{{- end }}
