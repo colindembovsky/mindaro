@@ -35,8 +35,7 @@ ingress:
 
 ingressRoute:
   enabled: true
-  path: /api
-  stripPrefix: true
+  match: PathPrefix(`/api`) && !Path(`/api/host`)
   
 secrets:
   users:

@@ -5,10 +5,11 @@ import Cookies from 'universal-cookie'
 
 const helpers = {
     getApiHostAsync: async function() {
-        const apiRequest = await fetch('/api/host');
-        const data = await apiRequest.json();
-        console.log('apiHost: ' + data.apiHost);
-        return data.apiHost;
+        // const apiRequest = await fetch('/api/host');
+        // const data = await apiRequest.json();
+        // console.log('apiHost: ' + data.apiHost);
+        //return data.apiHost;
+        return "";
     },
     verifyUserAsync: async function(apiHost) {
         var cookies = new Cookies();

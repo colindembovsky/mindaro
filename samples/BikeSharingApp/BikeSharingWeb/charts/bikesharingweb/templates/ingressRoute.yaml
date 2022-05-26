@@ -1,5 +1,5 @@
 {{- if .Values.ingressRoute.enabled -}}
-{{- $fullName := include "gateway.fullname" . -}}
+{{- $fullName := include "bikesharingweb.fullname" . -}}
 {{- $servicePort := .Values.service.port -}}
 {{- $ingressPath := .Values.ingressRoute.path -}}
 apiVersion: traefik.containo.us/v1alpha1
@@ -7,8 +7,8 @@ kind: IngressRoute
 metadata:
   name: {{ .Release.Name }}-{{ $fullName }}
   labels:
-    app: {{ template "gateway.name" . }}
-    chart: {{ template "gateway.chart" . }}
+    app: {{ template "bikesharingweb.name" . }}
+    chart: {{ template "bikesharingweb.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -17,7 +17,7 @@ spec:
   - websecure
   routes:
   - kind: Rule
-    match: {{ .Values.ingressRoute.match }}
+    match: PathPrefix(`{{ .Values.ingressRoute.path }}`)
     services:
     - kind: Service
       name: {{ $fullName }}

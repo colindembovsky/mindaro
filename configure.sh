@@ -1,13 +1,17 @@
+# prefs
+alias k=kubectl
+export KUBE_EDITOR="code -w"
+
+# minikube
 minikube create
 minikube start
-#minikube addons enable ingress
 eval $(minikube docker-env)
 
 export INGRESSBASE="colindembovsky-mindaro-4vq99grfq65w-8080.githubpreview.dev"
 export CHARTDIR="./samples/BikeSharingApp/charts/"
 export BIKENS="bikeapp"
 
-# traefik
+# install traefik
 helm repo add traefik https://helm.traefik.io/traefik
 helm repo update
 helm install traefik traefik/traefik \
@@ -27,17 +31,18 @@ kubectl port-forward $(kubectl get pods --selector "app.kubernetes.io/name=traef
 # !!VERY IMPORTANT!! The trailing slash is MANDATORY!!
 # navigate to $host:9000/dashboard/. 
 
-
 # install chart
 helm dependency build "$CHARTDIR"
 helm install bikesharingapp "$CHARTDIR" \
-   --set bikesharingweb.ingress.hosts={$fqdn} \
-   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
    --dependency-update \
    --namespace $BIKENS \
    --timeout 9m \
    --atomic $HELMARGS
 
 # test API
+curl -iH"Host: $fqdn" http://localhost:8080/api/host
 curl -iH"Host: $fqdn" http://localhost:8080/api/bike/availableBikes
+curl -iH"Host: $fqdn" http://localhost:8080/api/user/allUsers
+
 # test web
+curl -iH"Host: $fqdn" http://localhost:8080/
