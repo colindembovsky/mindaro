@@ -17,7 +17,7 @@ spec:
   - websecure
   routes:
   - kind: Rule
-    match: PathPrefix(`{{ .Values.ingressRoute.path }}`)
+    match: {{ .Values.ingressRoute.match }}
     services:
     - kind: Service
       name: {{ $fullName }}
