@@ -18,10 +18,15 @@ helm install traefik traefik/traefik \
    --set ingressClass.isDefaultClass=true \
    --set service.type=ClusterIP
 
-echo "kubectl config"
+echo "kubectl config bash"
 echo 'alias k=kubectl' >>~/.bashrc
 echo 'complete -F __start_kubectl k' >>~/.bashrc
-export KUBE_EDITOR="code -w"
+echo 'export KUBE_EDITOR="code -w"' >>~/.bashrc
+
+echo "kubectl config zsh"
+echo 'alias k=kubectl' >>~/.zshrc
+echo 'source <(kubectl completion zsh)' >>~/.zshrc
+echo 'export KUBE_EDITOR="code -w"' >>~/.zshrc
 
 echo "build the containers"
 docker-compose build
