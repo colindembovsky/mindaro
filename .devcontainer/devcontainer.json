@@ -5,8 +5,7 @@
 	"dockerFile": "Dockerfile",
 	"runArgs": ["--privileged"],
 	"mounts": [
-		"source=minikube-var-lib-docker,target=/var/lib/docker,type=volume",
-		"source=minikube-config,target=/home/vscode/.minikube,type=volume",
+		"source=minikube-var-lib-docker,target=/var/lib/docker,type=volume"
 	],
 	"overrideCommand": false,
 
@@ -27,9 +26,8 @@
 		"9000": { "label": "Traefik" },
 	},
 
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "/bin/bash -c .devcontainer/post-create.sh",
-	// "onCreateCommand": "/bin/bash -c .devcontainer/post-create.sh",
+	"onCreateCommand": "/bin/bash -c .devcontainer/on-create.sh",
+	"postStartCommand": "/bin/bash -c .devcontainer/post-start.sh",
 
 	// Use 'postStartCommand' to run commands after the container is created like starting minikube.
 	// "postStartCommand": "nohup bash -c 'minikube start &' > minikube.log 2>&1",

@@ -6,7 +6,6 @@ echo "on-create start"
 echo "$(date)    on-create start" >> "$HOME/status"
 
 echo "create minikube cluster"
-alias k=kubectl
 minikube start
 eval $(minikube docker-env)
 
@@ -18,9 +17,6 @@ helm install traefik traefik/traefik \
    --set ingressClass.enabled=true \
    --set ingressClass.isDefaultClass=true \
    --set service.type=ClusterIP
-
-echo "set the default namespace for kubectl"
-kubectl config set-context --current --namespace bikeapp
 
 echo "build the containers"
 docker-compose build
