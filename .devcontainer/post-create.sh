@@ -8,11 +8,6 @@ echo "$(date)    post-create start" >> "$HOME/status"
 echo "start minikube"
 minikube start
 
-echo "kubectl setup"
-alias k="kubectl"
-source /usr/share/bash-completion/bash_completion
-export KUBE_EDITOR="code -w"
-
 echo "set the default namespace for kubectl"
 k config set-context --current --namespace bikeapp
 
