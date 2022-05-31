@@ -18,7 +18,11 @@ RUN apt-get update && /bin/bash /tmp/library-scripts/common-debian.sh "${INSTALL
     && /bin/bash /tmp/library-scripts/kubectl-helm-debian.sh "latest" "latest" "latest" \
     && mkdir -p /home/${USERNAME}/.minikube \
     && chown ${USERNAME} /home/${USERNAME}/.minikube \
-    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
+    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/ \
+    # set welcome message
+    && echo "👋 Welcome to your Cloud Native Codespace ☁️! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
+    && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
+    && echo "🚀 To run The Bike App 🚲 , use the Command Palette to forward the ingress and helm deploy \n\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
 
 VOLUME [ "/var/lib/docker" ]
 

@@ -5,11 +5,16 @@
 echo "post-create start"
 echo "$(date)    post-create start" >> "$HOME/status"
 
-echo "start minikube"
-minikube start
+echo "build the containers"
+docker-compose build
 
-echo "set the default namespace for kubectl"
-k config set-context --current --namespace bikeapp
+echo "update charts"
+export CHARTDIR="./samples/BikeSharingApp/charts/"
+helm dependency build "$CHARTDIR"
+
+helm install bikesharingapp "$CHARTDIR" \
+   --dependency-update \
+   --namespace bikeapp
 
 echo "post-create complete"
 echo "$(date +'%Y-%m-%d %H:%M:%S')    post-create complete" >> "$HOME/status"
