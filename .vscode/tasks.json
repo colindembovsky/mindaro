@@ -22,7 +22,7 @@
 		{
 			"label": "deploy helm",
 			"type": "shell",
-			"command": "helm install bikesharingapp ./samples/BikeSharingApp/charts/ --dependency-update --namespace bikapp --timeout 2m --atomic",
+			"command": "helm upgrade bikesharingapp --install ./samples/BikeSharingApp/charts/ --dependency-update --namespace bikeapp --timeout 2m --atomic",
 			"group": "build",
 			"dependsOn": [ "minikube start", "refresh helm" ]
 		},
