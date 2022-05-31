@@ -22,11 +22,15 @@ echo "kubectl config bash"
 echo 'alias k=kubectl' >>~/.bashrc
 echo 'complete -F __start_kubectl k' >>~/.bashrc
 echo 'export KUBE_EDITOR="code -w"' >>~/.bashrc
+echo 'kubectl config set-context --current --namespace bikeapp' >>~/.bashrc
+echo 'eval $(minikube docker-env)' >>~/.bashrc
 
 echo "kubectl config zsh"
 echo 'alias k=kubectl' >>~/.zshrc
 echo 'source <(kubectl completion zsh)' >>~/.zshrc
 echo 'export KUBE_EDITOR="code -w"' >>~/.zshrc
+echo 'kubectl config set-context --current --namespace bikeapp' >>~/.zshrc
+echo 'eval $(minikube docker-env)' >>~/.zshrc
 
 echo "on-create complete"
 echo "$(date +'%Y-%m-%d %H:%M:%S')    on-create complete" >> "$HOME/status"

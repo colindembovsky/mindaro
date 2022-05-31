@@ -8,6 +8,9 @@ echo "$(date)    post-start start" >> "$HOME/status"
 echo "start minikube"
 nohup bash -c 'minikube start &' > minikube.log 2>&1
 
+echo "set env"
+eval $(minikube docker-env)
+
 echo "set the default namespace for kubectl"
 kubectl config set-context --current --namespace bikeapp
 
