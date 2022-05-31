@@ -1,0 +1,60 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "start minikube",
+			"type": "shell",
+			"command": "minikube start && kubectl config set-context --current --namespace bikeapp",
+			"group": "none"
+		},
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "docker-compose build",
+			"group": "build"
+		},
+		{
+			"label": "refresh helm",
+			"type": "shell",
+			"command": "helm dependency build ./samples/BikeSharingApp/charts/",
+			"group": "build"
+		},
+		{
+			"label": "deploy helm",
+			"type": "shell",
+			"command": "helm install bikesharingapp ./samples/BikeSharingApp/charts/ --dependency-update --namespace bikapp --timeout 2m --atomic",
+			"group": "build",
+			"dependsOn": [ "minikube start", "refresh helm" ]
+		},
+		{
+			"label": "k8s: fwd dash",
+			"type": "shell",
+			"command": "kubectl port-forward -nbikeapp $(kubectl get pods -nbikeapp --selector \"app.kubernetes.io/name=traefik\" --output=name) 9000:9000",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			},
+			"problemMatcher": [],
+			"group": "none"
+		},
+		{
+			"label": "k8s: fwd ingress",
+			"type": "shell",
+			"command": "kubectl",
+			"args": [
+				"port-forward",
+				"svc/traefik",
+				"8080:80",
+				"-nbikeapp"
+			],
+			"isBackground": true,
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			},
+			"problemMatcher": [],
+			"group": "none"
+		}
+	]
+}
