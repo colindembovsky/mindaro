@@ -29,15 +29,15 @@ echo 'source <(kubectl completion zsh)' >>~/.zshrc
 echo 'export KUBE_EDITOR="code -w"' >>~/.zshrc
 
 echo "build the containers"
-docker-compose build
+#docker-compose build
 
 echo "update charts"
 export CHARTDIR="./samples/BikeSharingApp/charts/"
 helm dependency build "$CHARTDIR"
 
-helm install bikesharingapp "$CHARTDIR" \
-   --dependency-update \
-   --namespace bikeapp
+#helm install bikesharingapp "$CHARTDIR" \
+#   --dependency-update \
+#   --namespace bikeapp
 
 echo "on-create complete"
 echo "$(date +'%Y-%m-%d %H:%M:%S')    on-create complete" >> "$HOME/status"

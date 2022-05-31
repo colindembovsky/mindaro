@@ -30,6 +30,7 @@
 
 	"onCreateCommand": "/bin/bash -c .devcontainer/on-create.sh",
 	"postStartCommand": "/bin/bash -c .devcontainer/post-start.sh",
+	"waitFor": "onCreateCommand",
 
 	// Use 'postStartCommand' to run commands after the container is created like starting minikube.
 	// "postStartCommand": "nohup bash -c 'minikube start &' > minikube.log 2>&1",
