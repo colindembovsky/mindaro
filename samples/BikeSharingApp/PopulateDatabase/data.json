@@ -40,7 +40,6 @@
         "suitableHeightInMeters": 1.7,
         "maximumWeightInKg": 150,
         "imageUrl": "https://raw.githubusercontent.com/microsoft/mindaro/master/samples/BikeSharingApp/Assets/sample-bike-01.jpg"
-        "imageUrl": "https://raw.githubusercontent.com/microsoft/mindaro/master/samples/BikeSharingApp/Assets/sample-bike-01.jpg"
       },
       {
         "model": "Men's Comfort",

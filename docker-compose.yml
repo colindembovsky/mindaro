@@ -3,41 +3,42 @@ version: '3.4'
 services:
 
   bikes:
-    image: azdspublic/bikesharing-bikes:build.20200723.1
+    image: bikeshare/bikesharing-bikes:dev
     build:
       context: samples/BikeSharingApp/Bikes
 
   bikeSharingWeb:
-      image: azdspublic/bikesharing-bikesharingweb:build.20200723.1
+      image: bikeshare/bikesharing-bikesharingweb:dev
       build:
         context: samples/BikeSharingApp/BikeSharingWeb
   
   billing:
-    image: azdspublic/bikesharing-billing:build.20200723.1
+    image: bikeshare/bikesharing-billing:dev
     build:
       context: samples/BikeSharingApp/Billing
 
   gateway:
-      image: azdspublic/bikesharing-gateway:build.20200723.1
+      image: bikeshare/bikesharing-gateway:dev
       build:
         context: samples/BikeSharingApp/Gateway
 
   reservation:
-    image: azdspublic/bikesharing-reservation:build.20200723.1
+    image: bikeshare/bikesharing-reservation:dev
     build:
       context: samples/BikeSharingApp/Reservation
 
   reservationEngine:
-      image: azdspublic/bikesharing-reservationengine:build.20200723.1
+      image: bikeshare/bikesharing-reservationengine:dev
       build:
         context: samples/BikeSharingApp/ReservationEngine
+        dockerfile: Dockerfile.develop
   
   users:
-    image: azdspublic/bikesharing-users:build.20200723.1
+    image: bikeshare/bikesharing-users:dev
     build:
       context: samples/BikeSharingApp/Users
 
   populateDatabase:
-      image: azdspublic/bikesharing-populatedatabase:build.20200723.1
+      image: bikeshare/bikesharing-populatedatabase:dev
       build:
         context: samples/BikeSharingApp/PopulateDatabase

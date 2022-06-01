@@ -1,0 +1,39 @@
+bikes:
+  image:
+    repository: bikeshare/bikesharing-bikes
+    tag: dev
+
+bikesharingweb:
+  image:
+    repository: bikeshare/bikesharing-bikesharingweb
+    tag: dev
+
+billing:
+  image:
+    repository: bikeshare/bikesharing-billing
+    tag: dev
+
+gateway:
+  image:
+    repository: bikeshare/bikesharing-gateway
+    tag: dev
+
+reservation:
+  image:
+    repository: bikeshare/bikesharing-reservation
+    tag: dev
+
+reservationengine:
+  image:
+    repository: bikeshare/bikesharing-reservationengine
+    tag: dev
+
+users:
+  image:
+    repository: bikeshare/bikesharing-users
+    tag: dev
+
+populatedatabase:
+  image:
+    repository: bikeshare/bikesharing-populatedatabase
+    tag: dev
