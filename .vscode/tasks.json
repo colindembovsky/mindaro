@@ -33,7 +33,7 @@
 			"isBackground": true,
 			"presentation": {
 				"reveal": "silent",
-				"panel": "shared"
+				"panel": "dedicated"
 			},
 			"problemMatcher": [],
 			"group": "none"
@@ -51,7 +51,7 @@
 			"isBackground": true,
 			"presentation": {
 				"reveal": "silent",
-				"panel": "shared"
+				"panel": "dedicated"
 			},
 			"problemMatcher": [],
 			"group": "none"
