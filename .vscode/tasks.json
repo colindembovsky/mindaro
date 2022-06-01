@@ -24,7 +24,10 @@
 			"type": "shell",
 			"command": "helm upgrade bikesharingapp --install ./samples/BikeSharingApp/charts/ --dependency-update --namespace bikeapp --timeout 2m --atomic",
 			"group": "build",
-			"dependsOn": [ "minikube start", "refresh helm" ]
+			"dependsOn": [
+				"minikube start",
+				"refresh helm"
+			]
 		},
 		{
 			"label": "k8s: fwd dash",
@@ -55,6 +58,32 @@
 			},
 			"problemMatcher": [],
 			"group": "none"
+		},
+		{
+			"label": "k8s: fwd mongo",
+			"type": "shell",
+			"command": "kubectl",
+			"args": [
+				"port-forward",
+				"svc/databases-mongo",
+				"27017:27017",
+				"-nbikeapp"
+			],
+			"isBackground": true,
+			"presentation": {
+				"reveal": "silent",
+				"panel": "dedicated"
+			},
+			"problemMatcher": [],
+			"group": "none"
+		},
+		{
+			"type": "npm",
+			"script": "install",
+			"path": "samples/BikeSharingApp/Bikes",
+			"problemMatcher": [],
+			"label": "npm: install - samples/BikeSharingApp/Bikes",
+			"detail": "npm install"
 		}
 	]
 }
