@@ -84,6 +84,26 @@
 			"problemMatcher": [],
 			"label": "npm: install - samples/BikeSharingApp/Bikes",
 			"detail": "npm install"
+		},
+		{
+			"label": "bridge-to-kubernetes.resource",
+			"type": "bridge-to-kubernetes.resource",
+			"resource": "bikes",
+			"resourceType": "service",
+			"ports": [
+				8099
+			],
+			"targetCluster": "minikube",
+			"targetNamespace": "bikeapp",
+			"useKubernetesServiceEnvironmentVariables": true
+		},
+		{
+			"label": "bridge-to-kubernetes.compound",
+			"dependsOn": [
+				"npm: install - samples/BikeSharingApp/Bikes",
+				"bridge-to-kubernetes.resource"
+			],
+			"dependsOrder": "sequence"
 		}
 	]
 }

@@ -7,6 +7,16 @@
         {
             "type": "pwa-node",
             "request": "launch",
+            "name": "Launch Nodejs with Kubernetes",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/samples/BikeSharingApp/Bikes/server.js",
+            "preLaunchTask": "bridge-to-kubernetes.compound"
+        },
+        {
+            "type": "pwa-node",
+            "request": "launch",
             "name": "Launch Nodejs",
             "skipFiles": [
                 "<node_internals>/**"
