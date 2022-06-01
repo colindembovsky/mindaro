@@ -5,6 +5,10 @@
 echo "on-create start"
 echo "$(date)    on-create start" >> "$HOME/status"
 
+echo "link node"
+mkdir -p /usr/local/share/nvm/current/
+ln -s /home/vscode/.nvm/versions/node/v16.15.0/bin /usr/local/share/nvm/current/bin
+
 echo "create minikube cluster"
 minikube start
 eval $(minikube docker-env)
