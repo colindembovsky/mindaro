@@ -31,7 +31,7 @@ services:
       image: bikeshare/bikesharing-reservationengine:dev
       build:
         context: samples/BikeSharingApp/ReservationEngine
-        dockerfile: Dockerfile.develop
+        dockerfile: Dockerfile.debug
   
   users:
     image: bikeshare/bikesharing-users:dev
