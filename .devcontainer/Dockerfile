@@ -16,17 +16,16 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 # Install needed packages and setup non-root user. Use a separate RUN statement to add your own dependencies.
 COPY library-scripts/*.sh /tmp/library-scripts/
+# set welcome message
+COPY welcome-message.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+
 RUN apt-get update && /bin/bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "true" "true" \
     && /bin/bash /tmp/library-scripts/docker-in-docker-debian.sh "true" "${USERNAME}" "${USE_MOBY}" \ 
     && /bin/bash /tmp/library-scripts/kubectl-helm-debian.sh "latest" "latest" "latest" \
     && /bin/bash /tmp/library-scripts/node-install.sh "${USERNAME}" "${NODE_VERSION}" \
     && mkdir -p /home/${USERNAME}/.minikube \
     && chown ${USERNAME} /home/${USERNAME}/.minikube \
-    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/ \
-    # set welcome message
-    && echo "👋 Welcome to your Cloud Native Codespace ☁️! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "🚀 To run The Bike App 🚲 , use the Command Palette to forward the ingress and helm deploy \n\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
 
 VOLUME [ "/var/lib/docker" ]
 

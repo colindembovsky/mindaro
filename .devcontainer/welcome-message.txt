@@ -1,0 +1,6 @@
+👋 Welcome to your Cloud Native Codespace! You are on a custom image defined in your devcontainer.json file.
+
+🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)
+
+🚀 To run The Bike App 🚲 , use the Command Palette to forward the ingress and helm deploy
+
