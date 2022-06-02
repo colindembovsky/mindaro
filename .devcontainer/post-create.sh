@@ -15,9 +15,12 @@ echo "update charts"
 export CHARTDIR="./samples/BikeSharingApp/charts/"
 helm dependency build "$CHARTDIR"
 
-helm install bikesharingapp "$CHARTDIR" \
+helm upgrade bikesharingapp --install "$CHARTDIR" \
+   --values "$CHARTDIR"/dev-values.yaml \
    --dependency-update \
-   --namespace bikeapp
+   --namespace bikeapp \
+   --timeout 2m \
+   --atomic
 
 echo "post-create complete"
 echo "$(date +'%Y-%m-%d %H:%M:%S')    post-create complete" >> "$HOME/status"
