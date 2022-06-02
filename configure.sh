@@ -51,9 +51,3 @@ curl -iH"Host: $fqdn" http://localhost:8080/api/user/allUsers
 
 # test web
 curl -iH"Host: $fqdn" http://localhost:8080/
-
-
-## local nodejs debug
-palette->run->k8s: fwd mongo
-launch->Launch nodejs
-terminal->curl -H"x-contoso-request-id:e6192a2d-7745-4f5f-a76b-5d88e71a5dff" localhost:3000/api/allbikes
