@@ -9,9 +9,16 @@
 			"group": "none"
 		},
 		{
+			"label": "minikube docker env",
+			"type": "shell",
+			"command": "eval $(minikube docker-env)",
+			"problemMatcher": [],
+			"group": "none"
+		},
+		{
 			"label": "build",
 			"type": "shell",
-			"command": "docker-compose build",
+			"command": "eval $(minikube docker-env) && docker-compose build",
 			"group": "build"
 		},
 		{
