@@ -5,6 +5,7 @@
 			"label": "start minikube",
 			"type": "shell",
 			"command": "minikube start && kubectl config set-context --current --namespace bikeapp",
+			"problemMatcher": [],
 			"group": "none"
 		},
 		{
