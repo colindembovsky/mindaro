@@ -65,10 +65,15 @@ All this is great - but what if want to debug inside the container?
 
 ### Step 4: Local container debug
 
-> TODO
+1. Run Task -> k8s: fwd ingress
+1. Debug -> Launch "Attach Kubernetes (core)"
+1. When it is attached, set a breakpoint in `samples/BikeSharingApp/ReservationEngine/Controllers/ReservationEngineController.cs` in the `UpdateReservation()` method
+1. Browse to the website and log in as Arelia Briggs.
+1. Click on a bike and click "Reserve"
 
 All this is great - but what if we want to debug to an instance of the service in a "real" cluster?
 
 ### Step 5: Bridge to K8s debug
 
-We can use `Bridge to K8s` to 
+We can use `Bridge to K8s` to connect to a K8s cluster - including redirecting traffic to a single application.
+

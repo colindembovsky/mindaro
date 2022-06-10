@@ -26,6 +26,39 @@
                 "mongo_connectionstring": "mongodb://localhost:27017"
             },
             "preLaunchTask": "npm: install - samples/BikeSharingApp/Bikes"
+        },
+        {
+            "name": "Attach (Kubernetes) coreclr",
+            "type": "coreclr",
+            "request": "attach",
+            "processName": "dotnet",
+            "sourceFileMap": {
+                "/src": "${workspaceFolder}/samples/BikeSharingApp/${input:debugProject}"
+            },
+            "pipeTransport": {
+                "pipeProgram": "kubectl",
+                "pipeArgs": [ "exec", "-i", "${command:extension.vsKubernetesSelectPod}", "--" ],
+                "pipeCwd": "${workspaceRoot}",
+                "debuggerPath": "/vsdbg/vsdbg",
+                "quoteArgs": false
+            },
         }
+    ], 
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "debugProject",
+            "description": "Which project are you debugging?",
+            "options": [
+              "Bikes",
+              "BikeSharingWeb",
+              "Billing",
+              "Gateway",
+              "Reservation",
+              "ReservationEngine",
+              "Users"
+            ],
+            "default": "ReservationEngine"
+          }
     ]
 }
