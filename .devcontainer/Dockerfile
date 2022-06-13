@@ -23,9 +23,16 @@ RUN apt-get update && /bin/bash /tmp/library-scripts/common-debian.sh "${INSTALL
     && /bin/bash /tmp/library-scripts/docker-in-docker-debian.sh "true" "${USERNAME}" "${USE_MOBY}" \ 
     && /bin/bash /tmp/library-scripts/kubectl-helm-debian.sh "latest" "latest" "latest" \
     && /bin/bash /tmp/library-scripts/node-install.sh "${USERNAME}" "${NODE_VERSION}" \
+    # install terraform
+    && apt-get install -y software-properties-common \
+    && curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - \
+    && apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+    && apt-get update && apt-get install terraform \
+    # install k9s
     && curl -L -O https://github.com/derailed/k9s/releases/download/v0.25.18/k9s_Linux_x86_64.tar.gz \
     && tar -zxvf k9s_Linux_x86_64.tar.gz \
     && mv k9s /usr/local/bin \
+    # prep minikube
     && mkdir -p /home/${USERNAME}/.minikube \
     && chown ${USERNAME} /home/${USERNAME}/.minikube \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
@@ -37,7 +44,3 @@ VOLUME [ "/var/lib/docker" ]
 # The script will also execute CMD if you need to alter startup behaviors.
 ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
 CMD [ "sleep", "infinity" ]
-
-# [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
