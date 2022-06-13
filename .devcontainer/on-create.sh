@@ -7,7 +7,7 @@ echo "$(date)    on-create start" >> "$HOME/status"
 
 echo "link node"
 sudo mkdir -p /usr/local/share/nvm/current/
-ln -s /home/vscode/.nvm/versions/node/v16.15.0/bin /usr/local/share/nvm/current/bin
+sudo ln -s /home/vscode/.nvm/versions/node/v16.15.0/bin /usr/local/share/nvm/current/bin
 
 echo "create minikube cluster"
 minikube start
