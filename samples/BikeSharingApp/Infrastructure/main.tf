@@ -35,14 +35,6 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     resource_group_name = azurerm_resource_group.rg.name
     dns_prefix          = var.dns_prefix
 
-    linux_profile {
-        admin_username = "ubuntu"
-
-        ssh_key {
-            key_data = file(var.ssh_public_key)
-        }
-    }
-
     default_node_pool {
         name            = "agentpool"
         node_count      = var.agent_count
@@ -54,11 +46,8 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         client_secret = var.aks_service_principal_client_secret
     }
 
-    addon_profile {
-        oms_agent {
-        enabled                    = true
-        log_analytics_workspace_id = azurerm_log_analytics_workspace.test.id
-        }
+    oms_agent {
+        log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace.id
     }
 
     network_profile {
@@ -67,6 +56,6 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     }
 
     tags = {
-        Environment = var.environment
+        Application = "Mindaro"
     }
 }

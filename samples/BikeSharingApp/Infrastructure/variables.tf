@@ -1,10 +1,10 @@
 variable "resource_group_location" {
-  default       = "southcentrals"
+  default       = "southcentralus"
   description   = "Location of the resource group."
 }
 
 variable "agent_count" {
-    default = 3
+    default = 2
 }
 
 variable "ssh_public_key" {
@@ -39,4 +39,10 @@ variable log_analytics_workspace_location {
 # refer https://azure.microsoft.com/pricing/details/monitor/ for log analytics pricing 
 variable log_analytics_workspace_sku {
     default = "PerGB2018"
+}
+
+variable aks_service_principal_app_id {
+}
+
+variable aks_service_principal_client_secret {
 }

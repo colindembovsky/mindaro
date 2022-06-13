@@ -9,10 +9,10 @@ terraform {
     }
   }
   backend "azurerm" {
-    resource_group_name  = "cd-mindaro"
-    storage_account_name = "cdminstore"
+    resource_group_name  = "cd-mindaro-shared"
+    storage_account_name = "cdminshared"
     container_name       = "tfstate"
-    key                  = "mindaro.tfstate"
+    key                  = "dev.mindaro.tfstate"
   }
 }
 
