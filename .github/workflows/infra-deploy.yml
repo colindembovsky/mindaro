@@ -112,7 +112,7 @@ jobs:
         name: tf-plan
         path: ${{ env.tf_actions_working_dir }}/out.tfplan
 
-    - name: Publish Coverage as a Status
+    - name: Publish plan as a status
       if: github.event_name == 'pull_request'
       uses: Sibz/github-status-action@v1.1.6
       with:
@@ -161,10 +161,48 @@ jobs:
 
     - name: Apply the plan
       id: apply
-      run: terraform apply
+      run: terraform apply -auto-approve
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         ARM_USE_OIDC: true
     
+    - name: Create the plan summary
+      uses: actions/github-script@v6
+      id: summary
+      env:
+        APPLY: '${{ steps.apply.outputs.stdout }}'
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          // 1. Prep the output
+          const output = `#### Terraform Apply 🚗\`${{ steps.apply.outcome }}\`
+          
+          <details><summary>Show details</summary>
+          
+          \`\`\`\n
+          ${process.env.APPLY}
+          \`\`\`
+          
+          </details>
+          
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+          
+          // 2. Set the output variable
+          const fs = require('fs');
+          fs.writeFileSync('${{ env.tf_actions_working_dir }}/summary.md', output);
+          core.setOutput('summary', output);
+      
+    - name: Write a step summary
+      run: cat summary.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Publish apply as a status
+      if: github.event_name == 'pull_request'
+      uses: Sibz/github-status-action@v1.1.6
+      with:
+        authToken: ${{ secrets.GITHUB_TOKEN }}
+        state: ${{ steps.summary.outputs.summary }}
+        context: Terraform Plan
+        description: Terraform Plan Summary
+        sha: ${{ github.event.pull_request.head.sha }}
