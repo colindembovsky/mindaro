@@ -99,8 +99,13 @@ jobs:
           *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
           
           // 2. Set the output variable
+          fs.writeFileSync('summary.md', output);
           core.setOutput('summary', output);
+
       
+    - name: Write a step summary1
+      run: cat summary.md
+
     - name: Write a step summary
       run: echo "${{ steps.summary.outputs.summary }}" >> $GITHUB_STEP_SUMMARY
 
