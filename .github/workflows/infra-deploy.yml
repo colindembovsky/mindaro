@@ -123,7 +123,7 @@ jobs:
         sha: ${{ github.event.pull_request.head.sha }}
 
   apply:
-    name: Terraform plan
+    name: Terraform apply
     needs: [ plan ]
     runs-on: ubuntu-latest
     environment: demo
@@ -159,9 +159,9 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: tf-plan
-        path: ${{ env.tf_actions_working_dir }}/plan
+        path: ${{ env.tf_actions_working_dir }}
 
-    # - name: Apply the plan
-    #   id: apply
-    #   run: terraform apply
+    - name: Apply the plan
+      id: apply
+      run: terraform apply
     
