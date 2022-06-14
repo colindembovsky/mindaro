@@ -73,7 +73,13 @@ All this is great - but what if want to debug inside the container?
 
 All this is great - but what if we want to debug to an instance of the service in a "real" cluster?
 
-### Step 5: Bridge to K8s debug
+### Step 5: AKS debug using Bridge
 
 We can use `Bridge to K8s` to connect to a K8s cluster - including redirecting traffic to a single application.
 
+### Infra as Code
+
+```sh
+cd samples/BikeSharingApp/Infrastructure
+tf plan --var "aks_service_principal_app_id=$ARM_CLIENT_ID" --var "aks_service_principal_client_secret=$ARM_CLIENT_SECRET"
+```
