@@ -9,6 +9,9 @@ on:
 env:
   tf_actions_working_dir: samples/BikeSharingApp/Infrastructure
 
+permissions:
+  id-token: write
+
 jobs:
   plan:
     name: Terraform plan
