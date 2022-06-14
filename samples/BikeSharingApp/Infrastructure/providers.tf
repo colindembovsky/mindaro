@@ -13,7 +13,6 @@ terraform {
     storage_account_name = "cdminshared"
     container_name       = "tfstate"
     key                  = "dev.mindaro.tfstate"
-    use_azuread_auth     = true
   }
 }
 
