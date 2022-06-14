@@ -70,7 +70,7 @@ jobs:
       uses: actions/github-script@v6
       id: summary
       env:
-        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        PLAN: "${{ steps.plan.outputs.stdout }}"
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -108,7 +108,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: tf-plan
-        path: out.tfplan
+        path: ./out.tfplan
 
     - name: Publish Coverage as a Status
       if: github.event_name == 'pull_request'
