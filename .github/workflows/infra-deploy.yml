@@ -32,13 +32,6 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - name: debug
-      run: |
-        echo pwd
-        pwd
-        echo ls
-        ls -la
-
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
     
@@ -57,7 +50,6 @@ jobs:
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         ARM_USE_OIDC: true
-        TF_LOG: debug
 
     - name: Terraform Validate
       id: validate
@@ -156,7 +148,14 @@ jobs:
     
     - name: Terraform Init
       id: init
-      run: terraform init
+      run: |
+        set
+        terraform init
+      env:
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        ARM_USE_OIDC: true
 
     - name: Download the plan
       uses: actions/download-artifact@v3
@@ -164,7 +163,7 @@ jobs:
         name: tf-plan
         path: ./plan
 
-    - name: Apply the plan
-      id: apply
-      run: terraform apply
+    # - name: Apply the plan
+    #   id: apply
+    #   run: terraform apply
     
