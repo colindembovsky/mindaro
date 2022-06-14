@@ -9,7 +9,8 @@ on:
 env:
   tf_actions_working_dir: samples/BikeSharingApp/Infrastructure
 
-permissions:
+
+#permissions:
   #id-token: write
   #contents: read
 
