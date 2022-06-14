@@ -40,9 +40,3 @@ variable log_analytics_workspace_location {
 variable log_analytics_workspace_sku {
     default = "PerGB2018"
 }
-
-variable aks_service_principal_app_id {
-}
-
-variable aks_service_principal_client_secret {
-}
