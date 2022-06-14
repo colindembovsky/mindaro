@@ -49,6 +49,11 @@ jobs:
     - name: Terraform Init
       id: init
       run: terraform init
+      env:
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        #ARM_CLIENT_SECRET='dRg7Q~DAOae3PaTfXnIdJCmWnr2MMe4v_gdy0'
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_CLIENT_ID }}
 
     - name: Terraform Validate
       id: validate
