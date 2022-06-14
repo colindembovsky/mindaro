@@ -10,8 +10,8 @@ env:
   tf_actions_working_dir: samples/BikeSharingApp/Infrastructure
 
 permissions:
-  id-token: write
-  contents: read
+  #id-token: write
+  #contents: read
 
 jobs:
   plan:
@@ -57,7 +57,7 @@ jobs:
 
     - name: Terraform Plan
       id: plan
-      run: terraform plan -no-color --out=plan
+      run: terraform plan -no-color --out=out.tfplan
       continue-on-error: true
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -69,7 +69,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: tf-plan
-        path: ./plan
+        path: out.tfplan
 
     - name: Create the plan summary
       uses: actions/github-script@v6
@@ -97,6 +97,7 @@ jobs:
           
           \`\`\`\n
           ${process.env.PLAN}
+
           \`\`\`
           
           </details>
