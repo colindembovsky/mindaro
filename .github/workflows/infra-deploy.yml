@@ -11,6 +11,7 @@ env:
 
 jobs:
   plan:
+    name: Terraform plan
     runs-on: ubuntu-latest
     environment: demo
     defaults:
@@ -20,12 +21,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    # - name: Log in to Azure using OIDC
-    #   uses: azure/login@v1
-    #   with:
-    #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-    #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-    #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Log in to Azure using OIDC
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: debug
       run: |
@@ -120,6 +121,7 @@ jobs:
           }
 
   apply:
+    name: Terraform plan
     needs: [ plan ]
     runs-on: ubuntu-latest
     environment: demo
@@ -130,12 +132,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    # - name: Log in to Azure using OIDC
-    #   uses: azure/login@v1
-    #   with:
-    #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-    #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-    #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Log in to Azure using OIDC
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
