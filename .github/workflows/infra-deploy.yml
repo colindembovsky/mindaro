@@ -103,13 +103,8 @@ jobs:
           fs.writeFileSync('${{ env.tf_actions_working_dir }}/summary.md', output);
           core.setOutput('summary', output);
       
-    - name: Write a step summary1
-      run: |
-        ls -la
-        cat summary.md
-
     - name: Write a step summary
-      run: echo "${{ steps.summary.outputs.summary }}" >> $GITHUB_STEP_SUMMARY
+      run: cat ${{ env.tf_actions_working_dir }}/summary.md >> $GITHUB_STEP_SUMMARY
 
     - name: Upload the plan
       uses: actions/upload-artifact@v3
