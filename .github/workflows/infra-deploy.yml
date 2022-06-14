@@ -10,9 +10,9 @@ env:
   tf_actions_working_dir: samples/BikeSharingApp/Infrastructure
 
 
-#permissions:
-  #id-token: write
-  #contents: read
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   plan:
@@ -66,12 +66,6 @@ jobs:
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         ARM_USE_OIDC: true
 
-    - name: Upload the plan
-      uses: actions/upload-artifact@v3
-      with:
-        name: tf-plan
-        path: out.tfplan
-
     - name: Create the plan summary
       uses: actions/github-script@v6
       id: summary
@@ -98,7 +92,6 @@ jobs:
           
           \`\`\`\n
           ${process.env.PLAN}
-
           \`\`\`
           
           </details>
@@ -110,6 +103,12 @@ jobs:
       
     - name: Write a step summary
       run: echo "${{ steps.summary.outputs.summary }}" >> $GITHUB_STEP_SUMMARY
+
+    - name: Upload the plan
+      uses: actions/upload-artifact@v3
+      with:
+        name: tf-plan
+        path: out.tfplan
 
     - name: Publish Coverage as a Status
       if: github.event_name == 'pull_request'
