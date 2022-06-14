@@ -13,11 +13,9 @@ terraform {
     storage_account_name = "cdminshared"
     container_name       = "tfstate"
     key                  = "dev.mindaro.tfstate"
-    use_oidc             = true
   }
 }
 
 provider "azurerm" {
-  use_oidc = true
   features {}
 }
