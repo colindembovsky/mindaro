@@ -47,6 +47,9 @@ jobs:
       run: terraform fmt -check
       continue-on-error: true
 
+    - name: Touch k8s config
+      run: touch ~/tfkube
+      
     - name: Terraform Init
       id: init
       run: terraform init
@@ -159,6 +162,9 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
     
+    - name: Touch k8s config
+      run: touch ~/tfkube
+      
     - name: Terraform Init
       id: init
       run: terraform init

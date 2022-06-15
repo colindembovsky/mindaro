@@ -1,3 +1,8 @@
+resource "local_file" "kubeconfig" {
+  content  = azurerm_kubernetes_cluster.k8s.kube_config_raw
+  filename = pathexpand(var.kubeconfig)
+}
+
 resource "azurerm_public_ip" "pip" {
   name                = "cdminPip"
   location            = azurerm_resource_group.rg.location
@@ -17,12 +22,20 @@ resource "azurerm_lb" "lb" {
 }
 
 resource "kubernetes_namespace" "bikeappns" {
+  depends_on = [
+    local_file.kubeconfig
+  ]
+  
   metadata {
     name = var.namespace
   }
 }
 
 resource "helm_release" "traefik" {
+  depends_on = [
+    local_file.kubeconfig
+  ]
+
   chart      = "traefik/traefik"
   name       = "traefik"
   namespace  = var.namespace

@@ -40,3 +40,7 @@ variable "log_analytics_workspace_sku" {
 variable "namespace" {
   default = "bikeapp"
 }
+
+variable "kubeconfig" {
+  default = "~/tfkube"
+}
