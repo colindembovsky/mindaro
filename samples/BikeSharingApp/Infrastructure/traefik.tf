@@ -23,6 +23,14 @@ resource "kubernetes_namespace" "bikeappns" {
   }
 }
 
+data "template_file" "traefik_vals" {
+  template = file("${path.module}/traefik-values.tpl")
+  vars = {
+    lb_ip   = "${azurerm_public_ip.pip.ip_address}"
+    rg_name = "${azurerm_resource_group.rg.name}"
+  }
+}
+
 resource "helm_release" "traefik" {
   depends_on = [
     kubernetes_namespace.bikeappns
@@ -34,25 +42,5 @@ resource "helm_release" "traefik" {
   repository = "https://helm.traefik.io/traefik"
   version    = "10.21.1"
 
-  set {
-    name  = "ingressClass.enabled"
-    value = true
-  }
-
-  set {
-    name  = "ingressClass.isDefaultClass"
-    value = true
-  }
-
-  set {
-    name  = "service.spec.loadBalancerIP"
-    value = azurerm_public_ip.pip.ip_address
-  }
-
-  set {
-    name = "service.annotations"
-    value = yamlencode({
-      "service.beta.kubernetes.io/azure-load-balancer-resource-group" : azurerm_resource_group.rg.name
-    })
-  }
+  values = [data.template_file.traefik_vals.rendered]
 }
