@@ -37,6 +37,10 @@ variable "log_analytics_workspace_sku" {
   default = "PerGB2018"
 }
 
+variable "domain_name_label" {
+  default = "cdmindaro"
+}
+
 variable "namespace" {
   default = "bikeapp"
 }
