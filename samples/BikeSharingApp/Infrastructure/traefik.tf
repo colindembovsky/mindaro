@@ -45,14 +45,14 @@ resource "helm_release" "traefik" {
   }
 
   set {
-    name  = "service"
+    name  = "service.spec.loadBalancerIP"
+    value = azurerm_public_ip.pip.ip_address
+  }
+
+  set {
+    name = "service.annotations"
     value = yamlencode({
-      spec = {
-        "loadBalancerIP" = azurerm_public_ip.pip.ip_address
-      }
-      annotations = {
-        "service.beta.kubernetes.io/azure-load-balancer-resource-group": azurerm_resource_group.rg.name
-      }
+      "service.beta.kubernetes.io/azure-load-balancer-resource-group" : azurerm_resource_group.rg.name
     })
   }
 }
