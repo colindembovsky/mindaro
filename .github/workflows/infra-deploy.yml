@@ -2,13 +2,19 @@ name: Infra deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      destroy:
+        type: boolean
+        description: Destroy environment?
+        required: true
+        default: false
+
   pull_request:
     paths:
     - samples/BikeSharingApp/Infrastructure/**
 
 env:
   tf_actions_working_dir: samples/BikeSharingApp/Infrastructure
-
 
 permissions:
   id-token: write
@@ -43,9 +49,7 @@ jobs:
 
     - name: Terraform Init
       id: init
-      run: |
-        set
-        terraform init
+      run: terraform init
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -55,16 +59,28 @@ jobs:
     - name: Terraform Validate
       id: validate
       run: terraform validate -no-color
+    
+    - name: Calculate destroy arg
+      id: destroy_arg
+      run: |
+        if [ $DESTROY == "true" ]; then
+          echo "::set-output name=val::-destroy" 
+        else
+          echo "::set-output name=val:: "
+        fi
+      env:
+        DESTROY: ${{ github.event.inputs.destroy }}
 
     - name: Terraform Plan
       id: plan
-      run: terraform plan -no-color --out=out.tfplan
+      run: terraform plan $DESTROY -no-color --out=out.tfplan
       continue-on-error: true
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         ARM_USE_OIDC: true
+        DESTROY: ${{ steps.destroy_arg.outputs.val }}
 
     - name: Create the plan summary
       uses: actions/github-script@v6
