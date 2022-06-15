@@ -22,7 +22,8 @@ provider "azurerm" {
 
 provider "helm" {
   kubernetes {
-    config_path = pathexpand(var.kubeconfig)
+    config_path    = pathexpand(var.kubeconfig)
+    config_context = var.cluster_name
   }
 }
 

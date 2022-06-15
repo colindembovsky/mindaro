@@ -7,7 +7,7 @@ resource "azurerm_public_ip" "pip" {
   name                = "cdminPip"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  domain_name_label   = var.domain_name_label 
+  domain_name_label   = var.domain_name_label
   allocation_method   = "Static"
 }
 
