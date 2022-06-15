@@ -7,20 +7,16 @@ variable "agent_count" {
   default = 2
 }
 
-variable "ssh_public_key" {
-  default = "~/.ssh/id_rsa.pub"
-}
-
 variable "dns_prefix" {
-  default = "mindaro"
+  default = "cdmindaro"
 }
 
 variable "cluster_name" {
-  default = "mindaro"
+  default = "cdmindaro"
 }
 
 variable "resource_group_name" {
-  default = "mindaro"
+  default = "cd-mindaro"
 }
 
 variable "location" {
