@@ -37,7 +37,7 @@ resource "helm_release" "traefik" {
     local_file.kubeconfig
   ]
 
-  chart      = "traefik/traefik"
+  chart      = "traefik"
   name       = "traefik"
   namespace  = var.namespace
   repository = "https://helm.traefik.io/traefik"
