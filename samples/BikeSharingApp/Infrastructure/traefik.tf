@@ -4,17 +4,7 @@ resource "azurerm_public_ip" "pip" {
   resource_group_name = azurerm_resource_group.rg.name
   domain_name_label   = var.domain_name_label
   allocation_method   = "Static"
-}
-
-resource "azurerm_lb" "lb" {
-  name                = "cdminLB"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-
-  frontend_ip_configuration {
-    name                 = "PublicIPAddress"
-    public_ip_address_id = azurerm_public_ip.pip.id
-  }
+  sku                 = "Standard"
 }
 
 resource "kubernetes_namespace" "bikeappns" {
@@ -33,7 +23,8 @@ data "template_file" "traefik_vals" {
 
 resource "helm_release" "traefik" {
   depends_on = [
-    kubernetes_namespace.bikeappns
+    kubernetes_namespace.bikeappns,
+    azurerm_role_assignment.network_role
   ]
 
   chart      = "traefik"
