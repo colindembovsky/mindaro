@@ -176,7 +176,7 @@ jobs:
 
     - name: Apply the plan
       id: apply
-      run: terraform apply -no-color -auto-approve
+      run: terraform apply out.tfplan -no-color -auto-approve
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
