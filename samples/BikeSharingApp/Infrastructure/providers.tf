@@ -22,11 +22,20 @@ provider "azurerm" {
 
 provider "helm" {
   kubernetes {
-    config_path    = pathexpand(var.kubeconfig)
-    config_context = var.cluster_name
+    host                   = azurerm_kubernetes_cluster.k8s.kube_config.0.host
+    username               = azurerm_kubernetes_cluster.k8s.kube_config.0.username
+    password               = azurerm_kubernetes_cluster.k8s.kube_config.0.password
+    client_certificate     = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.client_certificate)
+    client_key             = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.client_key)
+    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.cluster_ca_certificate)
   }
 }
 
 provider "kubernetes" {
-  config_path = pathexpand(var.kubeconfig)
+  host                   = azurerm_kubernetes_cluster.k8s.kube_config.0.host
+  username               = azurerm_kubernetes_cluster.k8s.kube_config.0.username
+  password               = azurerm_kubernetes_cluster.k8s.kube_config.0.password
+  client_certificate     = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.client_certificate)
+  client_key             = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.client_key)
+  cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.cluster_ca_certificate)
 }
