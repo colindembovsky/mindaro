@@ -59,7 +59,15 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   }
 }
 
-resource "azurerm_role_assignment" "network_role" {
+// SP that is executing this requires "User Access Administrator" role over subscription
+// to perform this operation
+resource "azurerm_role_assignment" "contributor_role" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_kubernetes_cluster.k8s.identity.0.principal_id
+}
+
+resource "azurerm_role_assignment" "network_contributor_role" {
   scope                = azurerm_resource_group.rg.id
   role_definition_name = "Network Contributor"
   principal_id         = azurerm_kubernetes_cluster.k8s.identity.0.principal_id
