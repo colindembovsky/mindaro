@@ -1,0 +1,39 @@
+bikes:
+  image:
+    repository: __IMAGE_REPO__/bikesharing-bikes
+    tag: __IMAGE_TAG__
+
+bikesharingweb:
+  image:
+    repository: __IMAGE_REPO__/bikesharing-bikesharingweb
+    tag: __IMAGE_TAG__
+
+billing:
+  image:
+    repository: __IMAGE_REPO__/bikesharing-billing
+    tag: __IMAGE_TAG__
+
+gateway:
+  image:
+    repository: __IMAGE_REPO__/bikesharing-gateway
+    tag: __IMAGE_TAG__
+
+reservation:
+  image:
+    repository: __IMAGE_REPO__/bikesharing-reservation
+    tag: __IMAGE_TAG__
+
+reservationengine:
+  image:
+    repository: __IMAGE_REPO__/bikesharing-reservationengine
+    tag: __IMAGE_TAG__
+
+users:
+  image:
+    repository: __IMAGE_REPO__/bikesharing-users
+    tag: __IMAGE_TAG__
+
+populatedatabase:
+  image:
+    repository: __IMAGE_REPO__/bikesharing-populatedatabase
+    tag: __IMAGE_TAG__

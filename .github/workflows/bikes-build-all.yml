@@ -1,13 +1,21 @@
-name: Bikes - Build All
+name: Bikes - Build-Deploy-All
 
 on:
   workflow_dispatch:
 
 permissions:
   packages: write
+  id-token: write
+
+env:
+  aks_resource_group: cd-mindaro
+  aks_cluster: cdmindaro
+  namespace: bikeapp
+  chart_root: ./samples/BikeSharingApp/charts
 
 jobs:
   build:
+    name: Build images
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -26,3 +34,47 @@ jobs:
       env:
         IMAGE_TAG: ${{ github.sha }}
         IMAGE_REPO: ghcr.io/${{ github.repository }}
+  
+  deploy:
+    name: Helm deploy
+    needs: [ build ]
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Log in to Azure using OIDC
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    
+    - name: Set the AKS kubectl context
+      uses: azure/aks-set-context@v2
+      with:
+        resource-group: ${{ env.aks_resource_group }}
+        cluster-name: ${{ env.aks_cluster }}
+    
+    - name: Replace tokens in values template
+      uses: cschleiden/replace-tokens@v1
+      with:
+        tokenPrefix: '__'
+        tokenSuffix: '__'
+        files: '["${{ env.chart_root }}/values.template.yaml"]'
+      env:
+        IMAGE_TAG: ${{ github.sha }}
+        IMAGE_REPO: ghcr.io/${{ github.repository }}
+
+    - name: Update helm dependencies
+      run: helm dependency build ${{ env.chart_root }}
+
+    - name: Deploy chart
+      run: |
+        helm upgrade bikesharingapp \
+          --install ${{ env.chart_root }} \
+          --values ${{ env.chart_root }}/values.template.yaml \
+          --dependency-update \
+          --namespace ${{ env.namespace }} \
+          --timeout 2m \
+          --atomic
