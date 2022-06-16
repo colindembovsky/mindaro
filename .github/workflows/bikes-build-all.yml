@@ -38,6 +38,7 @@ jobs:
   deploy:
     name: Helm deploy
     needs: [ build ]
+    environment: demo
 
     runs-on: ubuntu-latest
     steps:
