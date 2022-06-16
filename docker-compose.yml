@@ -3,42 +3,42 @@ version: '3.4'
 services:
 
   bikes:
-    image: bikeshare/bikesharing-bikes:dev
+    image: ${IMAGE_REPO:-bikeshare}/bikesharing-bikes:${IMAGE_TAG:-dev}
     build:
       context: samples/BikeSharingApp/Bikes
 
   bikeSharingWeb:
-      image: bikeshare/bikesharing-bikesharingweb:dev
-      build:
-        context: samples/BikeSharingApp/BikeSharingWeb
+    image: ${IMAGE_REPO:-bikeshare}/bikesharing-bikesharingweb:${IMAGE_TAG:-dev}
+    build:
+      context: samples/BikeSharingApp/BikeSharingWeb
   
   billing:
-    image: bikeshare/bikesharing-billing:dev
+    image: ${IMAGE_REPO:-bikeshare}/bikesharing-billing:${IMAGE_TAG:-dev}
     build:
       context: samples/BikeSharingApp/Billing
 
   gateway:
-      image: bikeshare/bikesharing-gateway:dev
-      build:
-        context: samples/BikeSharingApp/Gateway
+    image: ${IMAGE_REPO:-bikeshare}/bikesharing-gateway:${IMAGE_TAG:-dev}
+    build:
+      context: samples/BikeSharingApp/Gateway
 
   reservation:
-    image: bikeshare/bikesharing-reservation:dev
+    image: ${IMAGE_REPO:-bikeshare}/bikesharing-reservation:${IMAGE_TAG:-dev}
     build:
       context: samples/BikeSharingApp/Reservation
 
   reservationEngine:
-      image: bikeshare/bikesharing-reservationengine:dev
-      build:
-        context: samples/BikeSharingApp/ReservationEngine
-        dockerfile: Dockerfile.debug
-  
+    image: ${IMAGE_REPO:-bikeshare}/bikesharing-reservationengine:${IMAGE_TAG:-dev}
+    build:
+      context: samples/BikeSharingApp/ReservationEngine
+      dockerfile: Dockerfile.debug
+
   users:
-    image: bikeshare/bikesharing-users:dev
+    image: ${IMAGE_REPO:-bikeshare}/bikesharing-users:${IMAGE_TAG:-dev}
     build:
       context: samples/BikeSharingApp/Users
 
   populateDatabase:
-      image: bikeshare/bikesharing-populatedatabase:dev
+      image: ${IMAGE_REPO:-bikeshare}/bikesharing-populatedatabase:${IMAGE_TAG:-dev}
       build:
         context: samples/BikeSharingApp/PopulateDatabase
