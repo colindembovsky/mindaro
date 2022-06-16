@@ -77,5 +77,5 @@ jobs:
           --values ${{ env.chart_root }}/values.template.yaml \
           --dependency-update \
           --namespace ${{ env.namespace }} \
-          --timeout 2m \
+          --timeout 10m \
           --atomic
