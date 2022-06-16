@@ -10,6 +10,7 @@ permissions:
 env:
   aks_resource_group: cd-mindaro
   aks_cluster: cdmindaro
+  pip_dns: cdmindaro.southcentralus.cloudapp.azure.com
   namespace: bikeapp
   chart_root: ./samples/BikeSharingApp/charts
 
@@ -38,7 +39,9 @@ jobs:
   deploy:
     name: Helm deploy
     needs: [ build ]
-    environment: demo
+    environment:
+      name: demo
+      url: ${{ env.pip_dns }}
 
     runs-on: ubuntu-latest
     steps:
