@@ -72,3 +72,13 @@ resource "azurerm_role_assignment" "network_contributor_role" {
   role_definition_name = "Network Contributor"
   principal_id         = azurerm_kubernetes_cluster.k8s.identity.0.principal_id
 }
+
+# sleep a bit to let the RBAC roles propagate
+resource "time_sleep" "wait_30_seconds_for_rbac" {
+  depends_on = [
+    azurerm_role_assignment.contributor_role,
+    azurerm_role_assignment.network_contributor_role
+  ]
+
+  create_duration = "30s"
+}

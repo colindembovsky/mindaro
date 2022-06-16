@@ -24,8 +24,7 @@ data "template_file" "traefik_vals" {
 resource "helm_release" "traefik" {
   depends_on = [
     kubernetes_namespace.bikeappns,
-    azurerm_role_assignment.contributor_role,
-    azurerm_role_assignment.network_contributor_role
+    time_sleep.wait_30_seconds_for_rbac
   ]
 
   chart      = "traefik"
