@@ -47,9 +47,6 @@ jobs:
       run: terraform fmt -check
       continue-on-error: true
 
-    - name: Touch k8s config
-      run: touch ~/tfkube
-      
     - name: Terraform Init
       id: init
       run: terraform init
@@ -86,6 +83,7 @@ jobs:
 
     - name: Create the plan summary
       uses: actions/github-script@v6
+      if: always()
       id: summary
       env:
         PLAN: '${{ steps.plan.outputs.stdout }}'
@@ -122,6 +120,7 @@ jobs:
           core.setOutput('summary', output);
       
     - name: Write a step summary
+      if: always()
       run: cat summary.md >> $GITHUB_STEP_SUMMARY
 
     - name: Upload the plan
@@ -161,10 +160,7 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
-    
-    - name: Touch k8s config
-      run: touch ~/tfkube
-      
+
     - name: Terraform Init
       id: init
       run: terraform init
@@ -191,6 +187,7 @@ jobs:
     
     - name: Create the plan summary
       uses: actions/github-script@v6
+      if: always()
       id: summary
       env:
         APPLY: '${{ steps.apply.outputs.stdout }}'
@@ -216,6 +213,7 @@ jobs:
           core.setOutput('summary', output);
       
     - name: Write a step summary
+      if: always()
       run: cat summary.md >> $GITHUB_STEP_SUMMARY
 
     - name: Publish apply as a status
