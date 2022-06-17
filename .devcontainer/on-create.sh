@@ -33,7 +33,7 @@ helm upgrade bikesharingapp --install "$CHARTDIR" \
    --values "$CHARTDIR"/dev-values.yaml \
    --dependency-update \
    --namespace bikeapp \
-   --timeout 2m \
+   --timeout 5m \
    --atomic
 
 echo "kubectl config bash"
