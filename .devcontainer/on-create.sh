@@ -25,6 +25,17 @@ helm install traefik traefik/traefik \
 echo "build the containers from the repo"
 docker-compose build
 
+echo "update charts"
+export CHARTDIR="./samples/BikeSharingApp/charts/"
+helm dependency build "$CHARTDIR"
+
+helm upgrade bikesharingapp --install "$CHARTDIR" \
+   --values "$CHARTDIR"/dev-values.yaml \
+   --dependency-update \
+   --namespace bikeapp \
+   --timeout 2m \
+   --atomic
+
 echo "kubectl config bash"
 echo 'alias k=kubectl' >>~/.bashrc
 echo 'alias tf=terraform' >>~/.bashrc
