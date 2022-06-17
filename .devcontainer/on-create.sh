@@ -22,6 +22,9 @@ helm install traefik traefik/traefik \
    --set ingressClass.isDefaultClass=true \
    --set service.type=ClusterIP
 
+echo "build the containers from the repo"
+docker-compose build
+
 echo "kubectl config bash"
 echo 'alias k=kubectl' >>~/.bashrc
 echo 'alias tf=terraform' >>~/.bashrc

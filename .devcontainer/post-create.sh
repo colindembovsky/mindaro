@@ -8,7 +8,7 @@ echo "$(date)    post-create start" >> "$HOME/status"
 echo "set env"
 eval $(minikube docker-env)
 
-echo "build the containers"
+echo "build the containers (refresh)"
 docker-compose build
 
 echo "update charts"
