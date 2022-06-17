@@ -2,6 +2,13 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "k8s: set ns to bikeapp",
+			"type": "shell",
+			"command": "kubectl config set-context --current --namespace bikeapp",
+			"problemMatcher": [],
+			"group": "none"
+		},
+		{
 			"label": "start minikube",
 			"type": "shell",
 			"command": "minikube start && kubectl config set-context --current --namespace bikeapp",
