@@ -108,6 +108,8 @@ jobs:
       if: always()
       id: summary
       run: |
+        cat ${{ steps.bake.outputs.manifestsBundle }}
+        echo "==========="
         echo "### Helm Manifest 🖌" >> $GITHUB_STEP_SUMMARY
         echo "<details>" >> $GITHUB_STEP_SUMMARY
         echo "<summary>Show Manifest</summary>" >> $GITHUB_STEP_SUMMARY
