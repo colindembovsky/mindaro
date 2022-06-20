@@ -108,16 +108,18 @@ jobs:
       if: always()
       id: summary
       run: |
-        cat ${{ steps.bake.outputs.manifestsBundle }}
-        echo "==========="
-        echo "### Helm Manifest 🖌" >> $GITHUB_STEP_SUMMARY
-        echo "<details>" >> $GITHUB_STEP_SUMMARY
-        echo "<summary>Show Manifest</summary>" >> $GITHUB_STEP_SUMMARY
-        echo "\`\`\`yml" >> $GITHUB_STEP_SUMMARY
+        touch summary.md
+        echo "### Helm Manifest 🖌" >> summary.md
+        echo "<details>" >> summary.md
+        echo "<summary>Show Manifest</summary>" >> summary.md
+        echo "\`\`\`yml" >> summary.md
         # change the line endings to make prettier
-        cat ${{ steps.bake.outputs.manifestsBundle }} >>> $GITHUB_STEP_SUMMARY
-        echo "\`\`\`" >> GITHUB_STEP_SUMMARY
-        echo "</details>" >> $GITHUB_STEP_SUMMARY
+        cat ${{ steps.bake.outputs.manifestsBundle }} >> summary.md
+        echo "\`\`\`" >> summary.md
+        echo "</details>" >> summary.md
+
+        cat summary.md
+        cat summary.md >> $GITHUB_STEP_SUMMARY
 
     # - name: Deploy baked chart
     #   uses: azure/k8s-deploy@v1
