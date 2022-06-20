@@ -60,15 +60,15 @@ jobs:
         resource-group: ${{ env.aks_resource_group }}
         cluster-name: ${{ env.aks_cluster }}
     
-    # - name: Replace tokens in values template
-    #   uses: cschleiden/replace-tokens@v1
-    #   with:
-    #     tokenPrefix: '__'
-    #     tokenSuffix: '__'
-    #     files: '["${{ env.chart_root }}/values.template.yaml"]'
-    #   env:
-    #     IMAGE_TAG: ${{ github.sha }}
-    #     IMAGE_REPO: ghcr.io/${{ github.repository }}
+    - name: Replace tokens in values template
+      uses: cschleiden/replace-tokens@v1
+      with:
+        tokenPrefix: '__'
+        tokenSuffix: '__'
+        files: '["${{ env.chart_root }}/values.template.yaml"]'
+      env:
+        IMAGE_TAG: ${{ github.sha }}
+        IMAGE_REPO: ghcr.io/${{ github.repository }}
 
     - name: Update helm dependencies
       run: helm dependency build ${{ env.chart_root }}
@@ -95,33 +95,27 @@ jobs:
       id: bake
       uses: azure/k8s-bake@v1
       with:
-          renderEngine: 'helm'
-          helm-version: 'latest'
+          renderEngine: helm
+          helm-version: latest
           helmChart: ${{ env.chart_root }}
           releaseName: ${{steps.generate-release-name.outputs.result}}
+          overrideFiles: ${{ env.chart_root }}/values.template.yaml
           overrides: |
-            image.repository: ghcr.io/${{ github.repository }}
-            image.tag: ${{ github.sha }}
             fullnameOverride: ${{steps.generate-release-name.outputs.result}}
     
     - name: Output manifest to summary
       if: always()
       id: summary
       run: |
-        touch summary.md
-        echo "### Helm Manifest 🖌" >> summary.md
-        echo "<details>" >> summary.md
-        echo "<summary>Show Manifest</summary>" >> summary.md
-        echo "" >> summary.md
-        echo "\`\`\`yaml" >> summary.md
-        # change the line endings to make prettier
-        cat ${{ steps.bake.outputs.manifestsBundle }} >> summary.md
-        echo "\`\`\`" >> summary.md
-        echo "" >> summary.md
-        echo "</details>" >> summary.md
-
-        cat summary.md
-        cat summary.md >> $GITHUB_STEP_SUMMARY
+        echo "### Helm Manifest 🖌" >> $GITHUB_STEP_SUMMARY
+        echo "<details>" >> $GITHUB_STEP_SUMMARY
+        echo "<summary>Show Manifest</summary>" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`yaml" >> $GITHUB_STEP_SUMMARY
+        cat ${{ steps.bake.outputs.manifestsBundle }} >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "</details>" >> $GITHUB_STEP_SUMMARY
 
     # - name: Deploy baked chart
     #   uses: azure/k8s-deploy@v1
