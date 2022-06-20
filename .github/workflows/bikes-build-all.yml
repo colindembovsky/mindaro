@@ -127,7 +127,7 @@ jobs:
           
           // 2. Set the output variable
           const fs = require('fs');
-          fs.writeFileSync('${{ env.tf_actions_working_dir }}/summary.md', output);
+          fs.writeFileSync('summary.md', output);
           core.setOutput('summary', output);
       
     - name: Write a step summary
