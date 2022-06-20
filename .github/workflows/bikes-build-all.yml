@@ -112,7 +112,8 @@ jobs:
         echo "<details>" >> $GITHUB_STEP_SUMMARY
         echo "<summary>Show Manifest</summary>" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`yml" >> $GITHUB_STEP_SUMMARY
-        cat ${{ steps.bake.outputs.manifestsBundle }} >> $GITHUB_STEP_SUMMARY
+        # change the line endings to make prettier
+        sed 's/\r$//' ${{ steps.bake.outputs.manifestsBundle }} >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> GITHUB_STEP_SUMMARY
         echo "</details>" >> $GITHUB_STEP_SUMMARY
 
