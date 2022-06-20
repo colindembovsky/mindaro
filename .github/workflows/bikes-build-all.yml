@@ -21,20 +21,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Login to GitHub Container Registry
+    #   uses: docker/login-action@v2
+    #   with:
+    #     registry: ghcr.io
+    #     username: ${{ github.actor }}
+    #     password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push the images
-      run: |
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
-        docker-compose push
-      env:
-        IMAGE_TAG: ${{ github.sha }}
-        IMAGE_REPO: ghcr.io/${{ github.repository }}
+    # - name: Build and push the images
+    #   run: |
+    #     docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
+    #     docker-compose push
+    #   env:
+    #     IMAGE_TAG: ${{ github.sha }}
+    #     IMAGE_REPO: ghcr.io/${{ github.repository }}
   
   deploy:
     name: Helm deploy
@@ -104,35 +104,15 @@ jobs:
             image.tag: ${{ github.sha }}
             fullnameOverride: ${{steps.generate-release-name.outputs.result}}
     
-    - name: Create the plan summary
-      uses: actions/github-script@v6
+    - name: Output manifest to summary
       if: always()
       id: summary
       env:
-        MANIFEST: '${{ steps.bake.outputs.manifestsBundle }}'
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          // 1. Prep the output
-          const output = `#### Helm Manifest 🖌
-          <details><summary>Show Manifest</summary>
-          
-          \`\`\`yml\n
-          ${process.env.MANIFEST}
-          \`\`\`
-          
-          </details>
-          
-          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.chart_root }}\`, Workflow: \`${{ github.workflow }}\`*`;
-          
-          // 2. Set the output variable
-          const fs = require('fs');
-          fs.writeFileSync('summary.md', output);
-          core.setOutput('summary', output);
-      
-    - name: Write a step summary
-      if: always()
-      run: cat summary.md >> $GITHUB_STEP_SUMMARY
+        MANIFEST_FILE: '${{ steps.bake.outputs.manifestsBundle }}'
+      run: |
+        echo "#### Helm Manifest 🖌\n<details><summary>Show Manifest</summary>\n\n```yml\n" >> $GITHUB_STEP_SUMMARY
+        cat $MANIFEST_FILE >> $GITHUB_STEP_SUMMARY
+        cat "```\n</details>" >> $GITHUB_STEP_SUMMARY
 
     # - name: Deploy baked chart
     #   uses: azure/k8s-deploy@v1
