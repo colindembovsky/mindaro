@@ -112,10 +112,12 @@ jobs:
         echo "### Helm Manifest 🖌" >> summary.md
         echo "<details>" >> summary.md
         echo "<summary>Show Manifest</summary>" >> summary.md
-        echo "\`\`\`yml" >> summary.md
+        echo "" >> summary.md
+        echo "\`\`\`yaml" >> summary.md
         # change the line endings to make prettier
         cat ${{ steps.bake.outputs.manifestsBundle }} >> summary.md
         echo "\`\`\`" >> summary.md
+        echo "" >> summary.md
         echo "</details>" >> summary.md
 
         cat summary.md
