@@ -4,3 +4,4 @@
 
 🚀 To run The Bike App 🚲 , use the Command Palette to forward the ingress and helm deploy
 
+(Don't forget to set your default namespace to `bikeapp` using the Run Tasks)
