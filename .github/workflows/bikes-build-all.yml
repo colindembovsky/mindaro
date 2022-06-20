@@ -60,25 +60,83 @@ jobs:
         resource-group: ${{ env.aks_resource_group }}
         cluster-name: ${{ env.aks_cluster }}
     
-    - name: Replace tokens in values template
-      uses: cschleiden/replace-tokens@v1
-      with:
-        tokenPrefix: '__'
-        tokenSuffix: '__'
-        files: '["${{ env.chart_root }}/values.template.yaml"]'
-      env:
-        IMAGE_TAG: ${{ github.sha }}
-        IMAGE_REPO: ghcr.io/${{ github.repository }}
+    # - name: Replace tokens in values template
+    #   uses: cschleiden/replace-tokens@v1
+    #   with:
+    #     tokenPrefix: '__'
+    #     tokenSuffix: '__'
+    #     files: '["${{ env.chart_root }}/values.template.yaml"]'
+    #   env:
+    #     IMAGE_TAG: ${{ github.sha }}
+    #     IMAGE_REPO: ghcr.io/${{ github.repository }}
 
     - name: Update helm dependencies
       run: helm dependency build ${{ env.chart_root }}
 
-    - name: Deploy chart
+    # - name: Deploy chart
+    #   run: |
+    #     helm upgrade bikesharingapp \
+    #       --install ${{ env.chart_root }} \
+    #       --values ${{ env.chart_root }}/values.template.yaml \
+    #       --dependency-update \
+    #       --namespace ${{ env.namespace }} \
+    #       --timeout 10m \
+    #       --atomic
+    
+    - name: Create release-name
+      id: generate-release-name
       run: |
-        helm upgrade bikesharingapp \
-          --install ${{ env.chart_root }} \
-          --values ${{ env.chart_root }}/values.template.yaml \
-          --dependency-update \
-          --namespace ${{ env.namespace }} \
-          --timeout 10m \
-          --atomic
+          release=bikesharing-$GITHUB_HEAD_REF
+          release=${release::53}
+          release=$(echo ${release//[!0-9a-zA-Z]/-} | tr '[:upper:]' '[:lower:]' | sed -e 's/^-/z/' -e 's/-$/z/')
+          echo ::set-output name=result::$release
+
+    - name: Bake the manifest
+      id: bake
+      uses: azure/k8s-bake@v1
+      with:
+          renderEngine: 'helm'
+          helm-version: 'v3.3.1'
+          helmChart: ${{ env.chart_root }}
+          releaseName: ${{steps.generate-release-name.outputs.result}}
+          overrides: |
+            image.repository: ghcr.io/${{ github.repository }}
+            image.tag: ${{ github.sha }}
+            fullnameOverride: ${{steps.generate-release-name.outputs.result}}
+    
+    - name: Create the plan summary
+      uses: actions/github-script@v6
+      if: always()
+      id: summary
+      env:
+        MANIFEST: '${{ steps.bake.outputs.manifestsBundle }}'
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          // 1. Prep the output
+          const output = `#### Helm Manifest 🖌
+          <details><summary>Show Manifest</summary>
+          
+          \`\`\`yml\n
+          ${process.env.MANIFEST}
+          \`\`\`
+          
+          </details>
+          
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.chart_root }}\`, Workflow: \`${{ github.workflow }}\`*`;
+          
+          // 2. Set the output variable
+          const fs = require('fs');
+          fs.writeFileSync('${{ env.tf_actions_working_dir }}/summary.md', output);
+          core.setOutput('summary', output);
+      
+    - name: Write a step summary
+      if: always()
+      run: cat summary.md >> $GITHUB_STEP_SUMMARY
+
+    # - name: Deploy baked chart
+    #   uses: azure/k8s-deploy@v1
+    #   with:
+    #     manifests: ${{ steps.bake.outputs.manifestsBundle }}
+    #     namespace: ${{ env.namespace }}
+    #     force: "true"
