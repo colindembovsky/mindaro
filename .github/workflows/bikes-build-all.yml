@@ -72,27 +72,16 @@ jobs:
 
     - name: Update helm dependencies
       run: helm dependency build ${{ env.chart_root }}
-    
-    - name: Create release-name
-      id: generate-release-name
-      run: |
-          release=bikesharing-$GITHUB_HEAD_REF
-          release=${release::53}
-          release=$(echo ${release//[!0-9a-zA-Z]/-} | tr '[:upper:]' '[:lower:]' | sed -e 's/^-/z/' -e 's/-$/z/')
-          echo ::set-output name=result::$release
 
-    - name: Bake the manifest
-      id: bake
-      uses: azure/k8s-bake@v2
-      with:
-          renderEngine: helm
-          helm-version: latest
-          helmChart: ${{ env.chart_root }}
-          releaseName: ${{steps.generate-release-name.outputs.result}}
-          overrideFiles: ${{ env.chart_root }}/values.template.yaml
-          overrides: |
-            fullnameOverride: ${{steps.generate-release-name.outputs.result}}
-    
+    - name: Template chart
+      run: |
+        helm template bikesharingapp \
+          ${{ env.chart_root }} \
+          --values ${{ env.chart_root }}/values.template.yaml \
+          --dependency-update \
+          --namespace ${{ env.namespace }} \
+          > helm-generated-manifest.yml
+
     - name: Output manifest to summary
       if: always()
       id: summary
@@ -102,13 +91,17 @@ jobs:
         echo "<summary>Show Manifest</summary>" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`yaml" >> $GITHUB_STEP_SUMMARY
-        cat ${{ steps.bake.outputs.manifestsBundle }} >> $GITHUB_STEP_SUMMARY
+        cat helm-generated-manifest.yml >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "</details>" >> $GITHUB_STEP_SUMMARY
 
-    - name: Deploy baked chart
-      uses: azure/k8s-deploy@v3.1
-      with:
-        manifests: ${{ steps.bake.outputs.manifestsBundle }}
-        namespace: ${{ env.namespace }}
+    - name: Deploy chart
+      run: |
+        helm upgrade bikesharingapp \
+          --install ${{ env.chart_root }} \
+          --values ${{ env.chart_root }}/values.template.yaml \
+          --dependency-update \
+          --namespace ${{ env.namespace }} \
+          --timeout 10m \
+          --atomic
