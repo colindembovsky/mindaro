@@ -108,14 +108,12 @@ jobs:
       if: always()
       id: summary
       run: |
-        cat ${{ steps.bake.outputs.manifestsBundle }}
-        
         echo "### Helm Manifest 🖌" >> $GITHUB_STEP_SUMMARY
         echo "<details>" >> $GITHUB_STEP_SUMMARY
         echo "<summary>Show Manifest</summary>" >> $GITHUB_STEP_SUMMARY
-        echo "```yml" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`yml" >> $GITHUB_STEP_SUMMARY
         cat ${{ steps.bake.outputs.manifestsBundle }} >> $GITHUB_STEP_SUMMARY
-        echo "```" >> GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> GITHUB_STEP_SUMMARY
         echo "</details>" >> $GITHUB_STEP_SUMMARY
 
     # - name: Deploy baked chart
