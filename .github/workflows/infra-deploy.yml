@@ -41,6 +41,9 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
+
+    - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v1
     
     - name: Terraform fmt
       id: fmt
@@ -59,9 +62,6 @@ jobs:
     - name: Terraform Validate
       id: validate
       run: terraform validate -no-color
-
-    - name: Setup TFLint
-      uses: terraform-linters/setup-tflint@v1
       
     - name: Init TFLint
       run: tflint --init
