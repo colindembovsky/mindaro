@@ -61,6 +61,7 @@ jobs:
       run: terraform validate -no-color
 
     - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v1
       
     - name: Init TFLint
       run: tflint --init
