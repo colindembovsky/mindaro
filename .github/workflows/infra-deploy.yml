@@ -59,6 +59,14 @@ jobs:
     - name: Terraform Validate
       id: validate
       run: terraform validate -no-color
+
+    - name: Setup TFLint
+      
+    - name: Init TFLint
+      run: tflint --init
+
+    - name: Run TFLint
+      run: tflint -f compact
     
     - name: Calculate destroy arg
       id: destroy_arg
