@@ -16,8 +16,8 @@ resource "kubernetes_namespace" "bikeappns" {
 data "template_file" "traefik_vals" {
   template = file("${path.module}/traefik-values.tpl")
   vars = {
-    lb_ip   = "${azurerm_public_ip.pip.ip_address}"
-    rg_name = "${azurerm_resource_group.rg.name}"
+    lb_ip   = azurerm_public_ip.pip.ip_address
+    rg_name = azurerm_resource_group.rg.name
   }
 }
 
