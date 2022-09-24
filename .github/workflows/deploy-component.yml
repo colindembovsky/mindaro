@@ -98,7 +98,7 @@ jobs:
         path="./samples/BikeSharingApp/$component/charts/$compLower/"
         echo "::set-output name=chart-path::$path"
 
-        echo "::set-output name=release-name::$component-$version"
+        echo "::set-output name=release-name::$compLower-$version"
       env:
         component: ${{ github.event.inputs.component }}
         version: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
