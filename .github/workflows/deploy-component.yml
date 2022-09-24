@@ -10,6 +10,10 @@ on:
         description: The component to deploy
         required: true
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   rg-name: cd-mindaro
   cluster-name: cdmindaro
