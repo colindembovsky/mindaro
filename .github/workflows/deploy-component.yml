@@ -76,6 +76,8 @@ jobs:
       name: ${{ github.event.inputs.environment }}
 
     steps:
+    - uses: actions/checkout@v2
+
     - uses: azure/login@v1
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -93,7 +95,7 @@ jobs:
         compLower=$(echo $component | tr '[:upper:]' '[:lower:]')
         echo "::set-output name=lower-name::$compLower"
 
-        path="$PWD/samples/BikeSharingApp/$component/charts/$compLower/"
+        path="./samples/BikeSharingApp/$component/charts/$compLower/"
         echo "::set-output name=chart-path::$path"
 
         echo "::set-output name=release-name::$component-$version"
