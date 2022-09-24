@@ -69,6 +69,8 @@ jobs:
     needs: build-container
     name: Deploy component
     runs-on: ubuntu-20.04
+    environment:
+      name: ${{ github.event.inputs.environment }}
 
     steps:
     - uses: azure/login@v1
