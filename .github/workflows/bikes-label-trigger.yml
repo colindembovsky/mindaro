@@ -1,0 +1,30 @@
+name: Bikes - Label
+
+on:
+  pull_request:
+    types:
+      - labeled
+    paths:
+      - samples/BikeSharingApp/Bikes/**
+
+jobs:
+  deployment:
+    name: Create deployment
+    runs-on: ubuntu-20.04
+    if: |
+      github.event.label.name == 'deploy to demo' ||
+      github.event.label.name == 'deploy to test'
+    
+    steps:
+    - name: Checkout Sources
+      uses: actions/checkout@v3
+
+    - name: Create deployment from label
+      id: create-deploy
+      uses: colindembovsky/deployment-lifecycle-actions/create-deployment-from-label@v1
+      with:
+        deployment-workflow-name: deploy-component.yml
+        additional-inputs-json: |
+          { 
+            "component": "Bikes"
+          }
