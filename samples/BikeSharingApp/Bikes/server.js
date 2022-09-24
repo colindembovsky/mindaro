@@ -138,6 +138,8 @@ app.get('/api/allbikes', function(req, res) {
             delete bike._id;
         });
 
+        console.log("Found " + data.length + " bikes.");
+
         res.send(data);
     });
 });
