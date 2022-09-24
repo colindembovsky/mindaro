@@ -1,4 +1,4 @@
-name: Deploy Environment
+name: Deploy Component
 
 on:
   workflow_dispatch:
