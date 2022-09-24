@@ -54,7 +54,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        context: samples/BikeSharingApp/${{ github.event.inputs.component }}/
+        context: ./samples/BikeSharingApp/${{ github.event.inputs.component }}/
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
