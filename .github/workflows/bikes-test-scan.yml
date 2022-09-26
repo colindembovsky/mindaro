@@ -28,10 +28,10 @@ jobs:
       run: npm ci
     
     - name: Build
-      run: npm build
+      run: npm run build --if-present
 
-    #- name: Test
-    #  run: npm test
+    - name: Unit Test
+      run: npm run test
 
   scan:
     name: Scan code
