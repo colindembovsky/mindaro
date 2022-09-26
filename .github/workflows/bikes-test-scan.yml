@@ -22,9 +22,10 @@ jobs:
       with:
         node-version: 16
         cache: 'npm'
+        cache-dependency-path: samples/BikeSharingApp/Bikes/package-lock.json
     
     - name: Install packages
-      run: npm install
+      run: npm ci
     
     - name: Build
       run: npm build
@@ -75,7 +76,7 @@ jobs:
       id: scan
       with:
         image: localbuild/bikes:latest
-        #fail-build: true
+        fail-build: false
         #severity-cutoff: critical
     
     - name: upload Anchore scan SARIF report
