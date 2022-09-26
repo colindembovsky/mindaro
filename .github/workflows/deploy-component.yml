@@ -113,8 +113,8 @@ jobs:
         silent: false
         releaseName: ${{ steps.chart-meta.outputs.release-name }}
         overrides: |
-          image.repository: ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
-          image.tag: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
+          image.repository:ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
+          image.tag:${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
         
     - uses: azure/k8s-deploy@v4
       with:
