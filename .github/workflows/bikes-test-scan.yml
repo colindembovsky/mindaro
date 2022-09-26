@@ -10,6 +10,10 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-22.04
 
+    defaults:
+      run:
+        working-directory: samples/BikeSharingApp/Bikes/
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -40,6 +44,7 @@ jobs:
       uses: github/codeql-action/init@v2
       with:
         languages: javascript
+        source-root: samples/BikeSharingApp/Bikes/
     
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
