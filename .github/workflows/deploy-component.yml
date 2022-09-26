@@ -74,6 +74,7 @@ jobs:
     runs-on: ubuntu-20.04
     environment:
       name: ${{ github.event.inputs.environment }}
+      url: http://cdmindaro.southcentralus.cloudapp.azure.com/
 
     steps:
     - uses: actions/checkout@v2
