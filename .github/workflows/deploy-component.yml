@@ -74,6 +74,7 @@ jobs:
     runs-on: ubuntu-20.04
     environment:
       name: ${{ github.event.inputs.environment }}
+      url: http://cdmindaro.southcentralus.cloudapp.azure.com/
 
     steps:
     - uses: actions/checkout@v2
@@ -114,7 +115,6 @@ jobs:
         overrides: |
           image.repository: ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
           image.tag: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
-          fullnameOverride: ${{ steps.chart-meta.outputs.release-name }}
         
     - uses: azure/k8s-deploy@v4
       with:
