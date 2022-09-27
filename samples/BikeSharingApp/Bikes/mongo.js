@@ -1,5 +1,6 @@
 const { MongoClient } = require("mongodb");
 const { MongoMemoryServer } = require('mongodb-memory-server');
+const { populateTestData } = require('./__test__/populateTestData');
 
 var mongoDBDatabase = process.env.mongo_database || "admin";
 var mongoDBCollection = process.env.mongo_collection || "bikes";
@@ -14,7 +15,7 @@ const mongoOptions = {
   useUnifiedTopology: true,
 };
 
-function connectToDb(constr, callback) {
+function connectToDb(constr, callback, populateTestData) {
   MongoClient.connect(constr, mongoOptions, function(err, db) {
     if (err) {
         console.error("Mongo connection error!");
@@ -23,6 +24,9 @@ function connectToDb(constr, callback) {
     
     if (db) {
       dbConnection = db.db(mongoDBDatabase);
+      if (populateTestData) {
+        populateTestData(dbConnection.collection(mongoDBCollection));
+      }
       callback(err, dbConnection);
     } else {
       callback(err, null);
@@ -37,7 +41,7 @@ module.exports = {
       .then(server => {
         mongoDBConnStr = server.getUri();
         console.log("In-memory MongoDB connection string: " + mongoDBConnStr);
-        connectToDb(mongoDBConnStr, callback);
+        connectToDb(mongoDBConnStr, callback, populateTestData);
       });
     } else {
       connectToDb(mongoDBConnStr, callback);
