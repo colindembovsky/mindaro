@@ -9,29 +9,26 @@ console.log("Collection: " + mongoDBCollection);
 console.log("MongoDB connection string: " + mongoDBConnStr);
 
 let dbConnection;
-
-function connectToDb(err, db) {
-  if (err || !db) {
-    console.error(err);
-    throw err;
-  }
-
-  dbConnection = db.db(mongoDBDatabase);
-  console.log("Successfully connected to MongoDB.");
-
-  client.on('close', function() {
-    if (dbConnection) { // SIGINT and SIGTERM
-        console.log('Mongo connection closed! Shutting down.');
-        process.exit(1);
-    }});
-
-  return db;
-}
-
 const mongoOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 };
+
+function connectToDb(constr, callback) {
+  MongoClient.connect(constr, mongoOptions, function(err, db) {
+    if (err) {
+        console.error("Mongo connection error!");
+        console.error(err);
+    }
+    
+    if (db) {
+      dbConnection = db.db(mongoDBDatabase);
+      callback(err, dbConnection);
+    } else {
+      callback(err, null);
+    }
+  });
+}
 
 module.exports = {
   connectToServer: function (callback) {
@@ -40,34 +37,10 @@ module.exports = {
       .then(server => {
         mongoDBConnStr = server.getUri();
         console.log("In-memory MongoDB connection string: " + mongoDBConnStr);
-        MongoClient.connect(mongoDBConnStr, mongoOptions, function(err, db) {
-          if (err) {
-              console.error("Mongo connection error!");
-              console.error(err);
-          }
-          
-          if (db) {
-            dbConnection = db.db(mongoDBDatabase);
-            callback(err, dbConnection);
-          } else {
-            callback(err, null);
-          }
-        });
+        connectToDb(mongoDBConnStr, callback);
       });
     } else {
-      MongoClient.connect(mongoDBConnStr, mongoOptions, function(err, db) {
-        if (err) {
-            console.error("Mongo connection error!");
-            console.error(err);
-        }
-        
-        if (db) {
-          dbConnection = db.db(mongoDBDatabase);
-          callback(err, dbConnection);
-        } else {
-            callback(err, null);
-        }
-      });
+      connectToDb(mongoDBConnStr, callback);
     }
   },
 
