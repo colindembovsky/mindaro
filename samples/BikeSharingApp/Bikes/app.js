@@ -7,17 +7,7 @@ var validate = require('validate.js');
 var ObjectId = require('mongodb').ObjectID;
 var express = require('express');
 var {Router} = require('express');
-
-var mongoDBDatabase = process.env.mongo_database || "admin";
-var mongoDBCollection = process.env.mongo_collection || "bikes";
-var mongoDBConnStr = process.env.mongo_connectionstring || "mongodb://databases-mongo";
-console.log("Database: " + mongoDBDatabase);
-console.log("Collection: " + mongoDBCollection);
-console.log("MongoDB connection string: " + mongoDBConnStr);
-
-// Will be initialized on server startup at the bottom
-// Init to prototype to enable Intellisense
-var mongoDB = require('mongodb').Db.prototype;
+const mongoClient = require('./mongo');
 
 validate.validators.illegal = function(value, options, key, attributes) {
     if (value !== undefined && options) {
@@ -89,6 +79,10 @@ function requestIDParser(req, res, next) {
     console.log("RequestID done: " + reqID);
 }
 
+function getDb() {
+    return mongoClient.getDb();
+}
+
 // find bike ------------------------------------------------------------
 function handleGetAvailableBikes(req, res) {
     var requestID = req.header(requestIDHeaderName);
@@ -104,7 +98,7 @@ function handleGetAvailableBikes(req, res) {
         }
     }
 
-    var cursor = mongoDB.collection(mongoDBCollection).find(query).sort({ hourlyCost: 1 }).limit(30);
+    var cursor = getDb().find(query).sort({ hourlyCost: 1 }).limit(30);
     cursor.toArray(function(err, data) {
         if (err) {
             dbError(res, err, requestID);
@@ -123,7 +117,7 @@ function handleGetAvailableBikes(req, res) {
 function handleGetAllBikes(req, res) {
     var requestID = req.header(requestIDHeaderName);
 
-    var cursor = mongoDB.collection(mongoDBCollection).find({}).sort({ hourlyCost: 1 });
+    var cursor = getDb().find({}).sort({ hourlyCost: 1 });
     cursor.toArray(function(err, data) {
         if (err) {
             dbError(res, err, requestID);
@@ -151,7 +145,7 @@ function handlePostBikes(req, res) {
     var newBike = req.body;
     newBike.available = true;
 
-    mongoDB.collection(mongoDBCollection).insertOne(newBike, function(err, result) {
+    getDb().insertOne(newBike, function(err, result) {
         if (err) {
             dbError(res, err, requestID);
             return;
@@ -180,7 +174,7 @@ function handlePutBike(req, res) {
 
     var updatedBike = req.body;
 
-    mongoDB.collection(mongoDBCollection).updateOne({ _id: new ObjectId(req.params.bikeId) }, { $set: updatedBike }, function(err, result) {
+    getDb().updateOne({ _id: new ObjectId(req.params.bikeId) }, { $set: updatedBike }, function(err, result) {
         if (err) {
             dbError(res, err, requestID);
             return;
@@ -217,7 +211,7 @@ function handleGetBike(req, res) {
         return;
     }
 
-    mongoDB.collection(mongoDBCollection).findOne({ _id: new ObjectId(req.params.bikeId) }, function(err, result) {
+    getDb().findOne({ _id: new ObjectId(req.params.bikeId) }, function(err, result) {
         if (err) {
             dbError(res, err, requestID);
             return;
@@ -250,7 +244,7 @@ function handleDeleteBike(req, res) {
         return;
     }
     
-    mongoDB.collection(mongoDBCollection).deleteOne({ _id: new ObjectId(req.params.bikeId) }, function(err, result) {
+    getDb().deleteOne({ _id: new ObjectId(req.params.bikeId) }, function(err, result) {
         if (err) {
             dbError(res, err, requestID);
             return;
@@ -314,14 +308,14 @@ function processReservation(res, bikeId, changeTo, requestID) {
         return;
     }
 
-    mongoDB.collection(mongoDBCollection).updateOne({ _id: new ObjectId(bikeId), available: !changeTo }, { $set: { available: changeTo } }, function(err, result) {
+    getDb().updateOne({ _id: new ObjectId(bikeId), available: !changeTo }, { $set: { available: changeTo } }, function(err, result) {
         if (err) {
             dbError(res, err, requestID);
             return;
         }
         if (result.matchedCount === 0) {
             // Figure out if bike does not exist or if it was invalid reservation request
-            mongoDB.collection(mongoDBCollection).findOne({ _id: new ObjectId(bikeId) }, function(err, result) {
+            getDb().findOne({ _id: new ObjectId(bikeId) }, function(err, result) {
                 if (err) {
                     dbError(res, err, requestID);
                     return;
@@ -364,8 +358,6 @@ router.get('/hello', handleHello);
 
 module.exports = { 
     router: router,
-    mongoDB: mongoDB,
-    mongoDBDatabase: mongoDBDatabase,
-    mongoDBCollection: mongoDBCollection,
-    mongoDBConnStr: mongoDBConnStr
+    closeMongoServer: mongoClient.close,
+    connectToMongoServer: mongoClient.connectToServer
 };

@@ -8,7 +8,7 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 var express = require('express');
 var async = require('async');
-const {router, mongodb, mongoDBDatabase, mongoDBCollection, mongoDBConnStr} = require("./app");
+const {router, closeMongoServer, connectToMongoServer } = require("./app");
 
 var app = express();
 app.use('/', router);
@@ -44,9 +44,7 @@ process.on("SIGINT", () => {
     if (server) {
         server.close();
     }
-    var tmp = mongoDB;
-    mongoDB = null;
-    tmp.close();
+    closeMongoServer();
 });
 
 process.on("SIGTERM", () => {
@@ -54,27 +52,10 @@ process.on("SIGTERM", () => {
     if (server) {
         server.close();
     }
-    var tmp = mongoDB;
-    mongoDB = null;
-    tmp.close();
+    closeMongoServer();
 });
 
-function tryMongoConnect(callback, results) {
-    MongoClient.connect(mongoDBConnStr, { useUnifiedTopology: true }, function(err, db) {
-        if (err) {
-            console.error("Mongo connection error!");
-            console.error(err);
-        }
-        
-        if (db) {
-            callback(err, db.db(mongoDBDatabase));
-        } else {
-            callback(err, null);
-        }
-    });
-}
-
-async.retry({times: 10, interval: 1000}, tryMongoConnect, function(err, result) {
+async.retry({times: 3, interval: 500}, connectToMongoServer, function(err, _) {
     if (err) {
         console.error("Couldn't connect to Mongo! Giving up.");
         console.error(err);
@@ -82,12 +63,7 @@ async.retry({times: 10, interval: 1000}, tryMongoConnect, function(err, result) 
     }
 
     console.log("Connected to MongoDB");
-    mongoDB = result;    
-    mongoDB.s.client.on('close', function() {
-        if (mongoDB) { // SIGINT and SIGTERM
-            console.log('Mongo connection closed! Shutting down.');
-            process.exit(1);
-        }});
+    
     // Start server
     server = app.listen(port, function () {
         console.log('Listening on port ' + port);

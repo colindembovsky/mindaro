@@ -17,6 +17,6 @@
   },
   "scripts": {
     "debug": "node --nolazy server.js",
-    "test": "jest --coverage"
+    "test": "NODE_ENV=test jest --coverage"
   }
 }
