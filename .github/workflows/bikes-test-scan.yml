@@ -45,8 +45,6 @@ jobs:
           annotations: none
           working-directory: samples/BikeSharingApp/Bikes
     
-    - run: ls -la coverage/
-          
     - name: Analyze Test and/or Coverage Results
       uses: runforesight/foresight-test-kit-action@v1
       if: success() || failure()
@@ -55,8 +53,7 @@ jobs:
         test_format: JUNIT
         test_framework: JEST
         test_path: report.json
-        #coverage_format: <coverage_format_optional>
-        #coverage_path: <coverage_results_path_optional>
+        coverage_path: coverage
     
     - uses: marocchino/sticky-pull-request-comment@v2
       with:
