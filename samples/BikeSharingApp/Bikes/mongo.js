@@ -25,20 +25,24 @@ function connectToDb(constr, callback, populateTestData) {
     if (db) {
       dbConnection = db.db(mongoDBDatabase);
       if (populateTestData) {
-        populateTestData(dbConnection.collection(mongoDBCollection));
+        populateTestData(dbConnection.collection(mongoDBCollection), function (err, _) {
+          console.log("Added test data")
+          callback(err, dbConnection);
+        });
       }
-      callback(err, dbConnection);
     } else {
       callback(err, null);
     }
   });
 }
 
+let inmemServer;
 module.exports = {
   connectToServer: function (callback) {
     if (process.env.NODE_ENV === 'test') {
       MongoMemoryServer.create()
       .then(server => {
+        inmemServer = server;
         mongoDBConnStr = server.getUri();
         console.log("In-memory MongoDB connection string: " + mongoDBConnStr);
         connectToDb(mongoDBConnStr, callback, populateTestData);
@@ -53,8 +57,7 @@ module.exports = {
   },
 
   close: function () {
-    var tmp = dbConnection;
-    dbConnection = null;
-    console.log("%O", tmp);
+    dbConnection.s.client.close();
+    if (inmemServer) inmemServer.stop();
   }
 };

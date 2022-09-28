@@ -23,7 +23,7 @@ const bikes = [
     },
     {
         id: "0892374932874902374089",
-        available: true,
+        available: false,
         model: "Model3",
         hourlyCost: 30,
         imageUrl: "http://image",
@@ -35,12 +35,9 @@ const bikes = [
 ];
 
 module.exports = {
-    populateTestData: function(db) {
-        bikes.forEach(function(bike) {
-            db.insertOne(bike, function(err, result) {
-                if (err) throw err;
-                console.log("Inserted bike");
-            });
+    populateTestData: function(db, callback) {
+        db.insertMany(bikes, function(err, result) {
+            callback(err, result);
         });
     }
 }
