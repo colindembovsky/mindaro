@@ -44,6 +44,8 @@ jobs:
           output: report-markdown
           annotations: none
           working-directory: samples/BikeSharingApp/Bikes
+    
+    - run: ls -la
           
     - name: Analyze Test and/or Coverage Results
       uses: runforesight/foresight-test-kit-action@v1
