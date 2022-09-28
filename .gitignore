@@ -291,4 +291,4 @@ __pycache__/
 
 **/terraform.tfstate
 **/.terraform
-**/report.xml
+**/reports/
