@@ -53,6 +53,7 @@ jobs:
         test_format: JUNIT
         test_framework: JEST
         test_path: ./samples/BikeSharingApp/Bikes/report.json
+        coverage_framework: 'LCOV/TXT'
         coverage_path: ./samples/BikeSharingApp/Bikes/coverage
     
     - uses: marocchino/sticky-pull-request-comment@v2
