@@ -28,6 +28,19 @@
             "preLaunchTask": "npm: install - samples/BikeSharingApp/Bikes"
         },
         {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Launch Nodejs Test",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/samples/BikeSharingApp/Bikes/server.js",
+            "env": {
+                "NODE_ENV": "test"
+            },
+            "preLaunchTask": "npm: install - samples/BikeSharingApp/Bikes"
+        },
+        {
             "name": "Attach (Kubernetes) coreclr",
             "type": "coreclr",
             "request": "attach",
