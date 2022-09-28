@@ -44,7 +44,7 @@ jobs:
           message: ${{ steps.coverage.outputs.report }}
     
     - name: Add step summary
-      run: echo ${{ steps.coverage.outputs.report }} >> GITHUB_STEP_SUMMARY
+      run: echo "${{ steps.coverage.outputs.report }}" >> GITHUB_STEP_SUMMARY
 
   scan:
     name: Scan code
