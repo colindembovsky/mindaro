@@ -36,6 +36,8 @@ jobs:
       id: coverage
       with:
           output: report-markdown
+          annotations: none
+          working-directory: samples/BikeSharingApp/Bikes
     
     - uses: marocchino/sticky-pull-request-comment@v2
       with:
