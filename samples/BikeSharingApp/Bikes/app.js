@@ -164,7 +164,6 @@ function handlePutBike(req, res) {
     var validationErrors = validate(req.body, incomingBikeSchema);
     if (validationErrors) {
         res.status(400).send(validationErrors);
-        throw new Error("Invalid data");
         return;
     }
     if (!ObjectId.isValid(req.params.bikeId))
@@ -181,8 +180,9 @@ function handlePutBike(req, res) {
             return;
         }
         if (!result) {
-            res.status(500).send('DB response was null!');
-            return;
+            //res.status(500).send('DB response was null!');
+            //return;
+            throw new Error("DB response was null!");
         }
         if (result.matchedCount === 0) {
             bikeDoesNotExist(res, req.params.bikeId);
