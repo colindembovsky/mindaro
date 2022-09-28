@@ -180,9 +180,8 @@ function handlePutBike(req, res) {
             return;
         }
         if (!result) {
-            //res.status(500).send('DB response was null!');
-            //return;
-            throw new Error("DB response was null!");
+            res.status(500).send('DB response was null!');
+            return;
         }
         if (result.matchedCount === 0) {
             bikeDoesNotExist(res, req.params.bikeId);
