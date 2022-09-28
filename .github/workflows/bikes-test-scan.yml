@@ -54,8 +54,8 @@ jobs:
         api_key: ${{ secrets.FORESIGHT_API_KEY }}
         test_format: JUNIT
         test_framework: JEST
-        test_path: ./samples/BikeSharingApp/Bikes/report.json
-        coverage_format: 'JACOCO/XML'
+        test_path: ./samples/BikeSharingApp/Bikes/report.xml
+        coverage_format: 'COBERTURA/XML'
         coverage_path: ./samples/BikeSharingApp/Bikes/coverage
     
     - uses: marocchino/sticky-pull-request-comment@v2
