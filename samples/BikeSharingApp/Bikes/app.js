@@ -164,6 +164,7 @@ function handlePutBike(req, res) {
     var validationErrors = validate(req.body, incomingBikeSchema);
     if (validationErrors) {
         res.status(400).send(validationErrors);
+        throw new Error("Invalid data");
         return;
     }
     if (!ObjectId.isValid(req.params.bikeId))
