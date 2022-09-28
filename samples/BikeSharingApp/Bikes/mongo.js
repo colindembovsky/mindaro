@@ -1,5 +1,4 @@
 const { MongoClient } = require("mongodb");
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const { populateTestData } = require('./__test__/populateTestData');
 
 var mongoDBDatabase = process.env.mongo_database || "admin";
@@ -40,6 +39,7 @@ let inmemServer;
 module.exports = {
   connectToServer: function (callback) {
     if (process.env.NODE_ENV === 'test') {
+      const { MongoMemoryServer } = require('mongodb-memory-server');
       MongoMemoryServer.create()
       .then(server => {
         inmemServer = server;
