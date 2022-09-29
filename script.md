@@ -61,6 +61,11 @@ All this is great - but how do we debug?
     curl -H"x-contoso-request-id:e6192a2d-7745-4f5f-a76b-5d88e71a5dff" localhost:3000/api/allbikes
     ```
 
+1. Put:
+    ```sh
+    curl -H"x-contoso-request-id:e6192a2d-7745-4f5f-a76b-5d88e71a5dff" -H"Content-Type: application/json" -X POST -d '{"model": "Womens Cruiser","hourlyCost":1.00,"type": "tandem","address":"1907 18th Ave S, Seattle, WA 98144","ownerUserId":"16a46619738a4865a5afcb5e18ffb138","suitableHeightInMeters":1.7,"maximumWeightInKg":150,"imageUrl":"https://raw.githubusercontent.com/microsoft/mindaro/master/samples/BikeSharingApp/Assets/sample-bike-01.jpg"}' localhost:3000/api/bikes
+    ```
+
 All this is great - but what if want to debug inside the container?
 
 ### Step 4: Local container debug
