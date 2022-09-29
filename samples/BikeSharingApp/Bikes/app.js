@@ -114,6 +114,7 @@ function handleGetAvailableBikes(req, res) {
     });
 }
 
+// get all bikes ------------------------------------------------------------
 function handleGetAllBikes(req, res) {
     var requestID = req.header(requestIDHeaderName);
 
