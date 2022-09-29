@@ -8,6 +8,7 @@ metadata:
     draft: {{ .Values.draft | default "draft-app" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    "workflow/version": "stable"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
