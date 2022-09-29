@@ -1,0 +1,63 @@
+From 379abdf3b0ca21049afe4e0f09115ad2c12222e3 Mon Sep 17 00:00:00 2001
+From: Colin Dembovsky <colindembovsky@gmail.com>
+Date: Thu, 29 Sep 2022 13:57:41 +0000
+Subject: [PATCH 1/1] Add get by type
+
+---
+ samples/BikeSharingApp/Bikes/app.js | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+
+diff --git a/samples/BikeSharingApp/Bikes/app.js b/samples/BikeSharingApp/Bikes/app.js
+index 7f3f4cf..e26846f 100644
+--- a/samples/BikeSharingApp/Bikes/app.js
++++ b/samples/BikeSharingApp/Bikes/app.js
+@@ -83,7 +83,29 @@ function getDb() {
+     return mongoClient.getDb();
+ }
+ 
+-// find bike ------------------------------------------------------------
++// get by type ------------------------------------------------------------
++function handleGetBikesByType(req, res) {
++    var requestID = req.header(requestIDHeaderName);
++
++    const query = { $where: "this.type == '" + req.params.type + "'" };
++    
++    var cursor = getDb().find(query).sort({ hourlyCost: 1 }).limit(30);
++    cursor.toArray(function(err, data) {
++        if (err) {
++            dbError(res, err, requestID);
++            return;
++        }
++
++        data.forEach(function(bike) {
++            bike.id = bike._id;
++            delete bike._id;
++        });
++
++        res.send(data);
++    });
++}
++
++// get available ------------------------------------------------------------
+ function handleGetAvailableBikes(req, res) {
+     var requestID = req.header(requestIDHeaderName);
+     var query = { available: true };
+@@ -114,6 +136,7 @@ function handleGetAvailableBikes(req, res) {
+     });
+ }
+ 
++// get all bikes ------------------------------------------------------------
+ function handleGetAllBikes(req, res) {
+     var requestID = req.header(requestIDHeaderName);
+ 
+@@ -349,6 +372,7 @@ const router = Router();
+ router.get('/api/availableBikes', handleGetAvailableBikes);
+ router.get('/api/allbikes', handleGetAllBikes);
+ router.post('/api/bikes', handlePostBikes);
++router.get('/api/bikesByType/:type', handleGetBikesByType);
+ router.put('/api/bikes/:bikeId', handlePutBike);
+ router.get('/api/bikes/:bikeId', handleGetBike);
+ router.delete('/api/bikes/:bikeId', handleDeleteBike);
+-- 
+2.37.3
+
