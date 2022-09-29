@@ -83,7 +83,29 @@ function getDb() {
     return mongoClient.getDb();
 }
 
-// find bike ------------------------------------------------------------
+// get by type ------------------------------------------------------------
+function handleGetBikesByType(req, res) {
+    var requestID = req.header(requestIDHeaderName);
+
+    const query = { $where: "this.type == '" + req.params.type + "'" };
+    
+    var cursor = getDb().find(query).sort({ hourlyCost: 1 }).limit(30);
+    cursor.toArray(function(err, data) {
+        if (err) {
+            dbError(res, err, requestID);
+            return;
+        }
+
+        data.forEach(function(bike) {
+            bike.id = bike._id;
+            delete bike._id;
+        });
+
+        res.send(data);
+    });
+}
+
+// get available ------------------------------------------------------------
 function handleGetAvailableBikes(req, res) {
     var requestID = req.header(requestIDHeaderName);
     var query = { available: true };
@@ -114,6 +136,7 @@ function handleGetAvailableBikes(req, res) {
     });
 }
 
+// get all bikes ------------------------------------------------------------
 function handleGetAllBikes(req, res) {
     var requestID = req.header(requestIDHeaderName);
 
@@ -349,6 +372,7 @@ const router = Router();
 router.get('/api/availableBikes', handleGetAvailableBikes);
 router.get('/api/allbikes', handleGetAllBikes);
 router.post('/api/bikes', handlePostBikes);
+router.get('/api/bikesByType/:type', handleGetBikesByType);
 router.put('/api/bikes/:bikeId', handlePutBike);
 router.get('/api/bikes/:bikeId', handleGetBike);
 router.delete('/api/bikes/:bikeId', handleDeleteBike);
