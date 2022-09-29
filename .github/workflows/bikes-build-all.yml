@@ -98,10 +98,10 @@ jobs:
 
     - name: Remove old chart
       run: |
-        installed=$(helm ls --filter 'bikesharingapp' --no-headers)
+        installed=$(helm ls --namespace ${{ env.namespace }} --no-headers --filter bikesharingapp)
         if [ -z "$installed" ];
         then
-          helm uninstall bikesharingapp
+          helm uninstall bikesharingapp --namespace ${{ env.namespace }}
         else
           echo No install - skip uninstall
         fi
