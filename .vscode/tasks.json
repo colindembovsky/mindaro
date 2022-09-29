@@ -146,17 +146,16 @@
 		{
 			"id": "BRANCH_NAME",
 			"type": "promptString",
-			"default": "feature-bikes-by-type",
+			"default": "feature-get-by-type",
 			"description": "Provide a feature branch name"
 		},
 		{
 			"id": "CODE_FEATURE",
 			"type": "pickString",
 			"description": "Select the code feature",
-			"default": "book-star-rating",
+			"default": "get-by-type",
 			"options": [
-			  "book-star-rating",
-			  "book-search"
+			  "get-by-type"
 			]
 		}
 	]
