@@ -1,0 +1,53 @@
+From 1d0a4ce8874915baf7590a7a4346a3a93c87391a Mon Sep 17 00:00:00 2001
+From: Colin Dembovsky <colindembovsky@gmail.com>
+Date: Thu, 29 Sep 2022 15:20:34 +0000
+Subject: [PATCH] Add get by type method
+
+---
+ samples/BikeSharingApp/Bikes/app.js | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/samples/BikeSharingApp/Bikes/app.js b/samples/BikeSharingApp/Bikes/app.js
+index 24f4286..9cb3c07 100644
+--- a/samples/BikeSharingApp/Bikes/app.js
++++ b/samples/BikeSharingApp/Bikes/app.js
+@@ -232,6 +232,28 @@ function handleGetBike(req, res) {
+     });
+ }
+ 
++// get bike by type ------------------------------------------------------------
++function handleGetBikesByType(req, res) {
++    var requestID = req.header(requestIDHeaderName);
++
++    const query = { $where: "this.type == '" + req.params.type + "'" };
++    
++    var cursor = getDb().find(query).sort({ hourlyCost: 1 }).limit(30);
++    cursor.toArray(function(err, data) {
++        if (err) {
++            dbError(res, err, requestID);
++            return;
++        }
++
++        data.forEach(function(bike) {
++            bike.id = bike._id;
++            delete bike._id;
++        });
++
++        res.send(data);
++    });
++}
++
+ // delete bike ------------------------------------------------------------
+ function handleDeleteBike(req, res) {
+     var requestID = req.header(requestIDHeaderName);
+@@ -352,6 +374,7 @@ router.get('/api/allbikes', handleGetAllBikes);
+ router.post('/api/bikes', handlePostBikes);
+ router.put('/api/bikes/:bikeId', handlePutBike);
+ router.get('/api/bikes/:bikeId', handleGetBike);
++router.get('/api/bikesByType/:type', handleGetBikesByType);
+ router.delete('/api/bikes/:bikeId', handleDeleteBike);
+ router.patch('/api/bikes/:bikeId/reserve', handleReserveBike);
+ router.patch('/api/bikes/:bikeId/clear', handlePatchBike);
+-- 
+2.37.3
+
