@@ -29,8 +29,9 @@ function connectToDb(constr, callback, populateTestData) {
           callback(err, dbConnection);
         });
       }
-    } else {
-      callback(err, null);
+      else {
+        callback(err, null);
+      }
     }
   });
 }
