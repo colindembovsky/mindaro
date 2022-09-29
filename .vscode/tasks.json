@@ -119,6 +119,45 @@
 				"bridge-to-kubernetes.resource"
 			],
 			"dependsOrder": "sequence"
+		},
+		{
+			"label": "demo: code feature",
+			"type": "shell",
+			"command": "patches/apply-patch.sh",
+			"args": [
+			  "${input:CODE_FEATURE}",
+			  "${input:BRANCH_NAME}",
+			],
+			"group": "none",
+			"isBackground": true,
+			"problemMatcher": [],
+			"promptOnClose": false,
+			"presentation": {
+			  "echo": true,
+			  "reveal": "always",
+			  "focus": false,
+			  "panel": "shared",
+			  "showReuseMessage": false,
+			  "clear": false
+			}
+		},
+	],
+	"inputs": [
+		{
+			"id": "BRANCH_NAME",
+			"type": "promptString",
+			"default": "feature-bikes-by-type",
+			"description": "Provide a feature branch name"
+		},
+		{
+			"id": "CODE_FEATURE",
+			"type": "pickString",
+			"description": "Select the code feature",
+			"default": "book-star-rating",
+			"options": [
+			  "book-star-rating",
+			  "book-search"
+			]
 		}
 	]
 }
