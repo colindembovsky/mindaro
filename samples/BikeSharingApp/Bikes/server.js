@@ -3,20 +3,16 @@
 
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
-var validate = require('validate.js');
-var MongoClient = require('mongodb').MongoClient;
-var ObjectId = require('mongodb').ObjectID;
 var express = require('express');
 var async = require('async');
-const {router, closeMongoServer, connectToMongoServer } = require("./app");
+const {router, closeMongoServer, connectToMongoServer, requestIDHeaderName } = require("./app");
 
 var app = express();
-app.use('/', router);
 app.use(requestIDParser);
 app.use(morgan("dev"));
 app.use(bodyParser.json());
+app.use('/', router);
 
-var requestIDHeaderName = 'x-contoso-request-id';
 var requestIDRegex = new RegExp(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
 
 function requestIDParser(req, res, next) {

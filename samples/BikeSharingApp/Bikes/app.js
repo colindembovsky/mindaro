@@ -1,11 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-var morgan = require('morgan');
-var bodyParser = require('body-parser');
 var validate = require('validate.js');
 var ObjectId = require('mongodb').ObjectID;
-var express = require('express');
 var {Router} = require('express');
 const mongoClient = require('./mongo');
 
@@ -55,29 +52,7 @@ var incomingBikeSchema = {
     }
 };
 
-var app = express();
-app.use(requestIDParser);
-app.use(morgan("dev"));
-app.use(bodyParser.json());
-
-var requestIDHeaderName = 'x-contoso-request-id';
-var requestIDRegex = new RegExp(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
-
-function requestIDParser(req, res, next) {
-    var reqID = req.header(requestIDHeaderName);
-    var test = false;
-    if (reqID) {
-        test = requestIDRegex.test(reqID);
-    }
-    if (!test && req.path != "/hello") {
-        res.status(400).send("Couldn't parse request id guid");
-        return;
-    }
-
-    console.log("RequestID start: " + reqID);
-    next();
-    console.log("RequestID done: " + reqID);
-}
+const requestIDHeaderName = 'x-contoso-request-id';
 
 function getDb() {
     return mongoClient.getDb();
@@ -360,5 +335,6 @@ router.get('/hello', handleHello);
 module.exports = { 
     router: router,
     closeMongoServer: mongoClient.close,
-    connectToMongoServer: mongoClient.connectToServer
+    connectToMongoServer: mongoClient.connectToServer,
+    requestIDHeaderName: requestIDHeaderName
 };

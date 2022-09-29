@@ -96,7 +96,18 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "</details>" >> $GITHUB_STEP_SUMMARY
 
+    - name: Remove old chart
+      run: |
+        installed=$(helm ls --namespace ${{ env.namespace }} --no-headers --filter bikesharingapp)
+        if [ -z "$installed" ];
+        then
+          echo No install - skip uninstall
+        else
+          helm uninstall bikesharingapp --namespace ${{ env.namespace }}
+        fi
+
     - name: Deploy chart
+      if: always()
       run: |
         helm upgrade bikesharingapp \
           --install ${{ env.chart_root }} \
