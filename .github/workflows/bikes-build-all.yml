@@ -101,9 +101,9 @@ jobs:
         installed=$(helm ls --namespace ${{ env.namespace }} --no-headers --filter bikesharingapp)
         if [ -z "$installed" ];
         then
-          helm uninstall bikesharingapp --namespace ${{ env.namespace }}
-        else
           echo No install - skip uninstall
+        else
+          helm uninstall bikesharingapp --namespace ${{ env.namespace }}
         fi
 
     - name: Deploy chart
