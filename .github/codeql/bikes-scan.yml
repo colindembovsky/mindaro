@@ -1,0 +1,5 @@
+paths:
+  - samples/BikeSharingApp/Bikes
+paths-ignore:
+  - samples/BikeSharingApp/Bikes/node_modules
+  - samples/BikeSharingApp/Bikes/__test__
