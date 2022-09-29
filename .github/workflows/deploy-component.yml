@@ -105,10 +105,6 @@ jobs:
         component: ${{ github.event.inputs.component }}
         version: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
 
-    #- name: Delete existing deployment
-    #  run: |
-    #     kubectl delete Deployment/${{ steps.chart-meta.outputs.lower-name }} --namespace ${{ env.namespace }}
-
     - uses: azure/k8s-bake@v2.2
       id: bake
       with:
@@ -125,7 +121,6 @@ jobs:
       with:
         manifests: ${{ steps.bake.outputs.manifestsBundle }}
         namespace: ${{ env.namespace }}
-        force: true
         # below settings for canary deployment
         strategy: canary
         action: deploy
