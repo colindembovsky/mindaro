@@ -8,19 +8,20 @@ metadata:
     draft: {{ .Values.draft | default "draft-app" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    "workflow/version": "stable"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ template "bikes.name" . }}
       release: {{ .Release.Name }}
+      "workflow/version": "stable"
   template:
     metadata:
       labels:
         app: {{ template "bikes.name" . }}
         draft: {{ .Values.draft | default "draft-app" }}
         release: {{ .Release.Name }}
+        "workflow/version": "stable"
       annotations:
         buildID: {{ .Values.buildID | default "" | quote }}
     spec:
