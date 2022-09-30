@@ -79,6 +79,8 @@ jobs:
 
     outputs:
       manifestsBundle: ${{ steps.bake.outputs.manifestsBundle }}
+      imageRepo: ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
+      imageTag: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
 
     steps:
     - uses: actions/checkout@v2
@@ -174,6 +176,8 @@ jobs:
         cluster-name: ${{ env.cluster-name }}
 
     - run: echo ${{ needs.approve.result }}
+
+    - run: cat ${{ needs.deploy-canary.outputs.manifestsBundle }}
 
     - name: Promote canary
       uses: azure/k8s-deploy@v4
