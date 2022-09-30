@@ -127,6 +127,12 @@ jobs:
         strategy: canary
         action: deploy
         percentage: 50
+
+    - name: Save deployment manifests
+      uses: actions/upload-artifact@v3
+      with:
+        name: manifests
+        path: ${{ github.workspace }}/_temp
   
   approve:
     needs: deploy-canary
@@ -149,6 +155,13 @@ jobs:
       name: ${{ github.event.inputs.environment }}
 
     steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: manifests
+        path: ${{ github.workspace }}/_temp
+
+    - run: ls -la ${{ github.workspace }}/_temp
+    
     - uses: azure/login@v1
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
