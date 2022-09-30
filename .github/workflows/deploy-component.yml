@@ -132,7 +132,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: manifests
-        path: ${{ github.workspace }}/_temp
+        path: ${{ runner.temp }}
   
   approve:
     needs: deploy-canary
@@ -158,10 +158,10 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: manifests
-        path: ${{ github.workspace }}/_temp
+        path: ${{ runner.temp }}
 
-    - run: ls -la ${{ github.workspace }}/_temp
-    
+    - run: ls -la ${{ runner.temp }}
+
     - uses: azure/login@v1
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
