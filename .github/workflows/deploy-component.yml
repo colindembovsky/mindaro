@@ -143,6 +143,7 @@ jobs:
 
   promote-reject:
     name: Promote/Reject
+    if: ${{ always() && !cancelled() }}
     needs:
     - approve
     - deploy-canary
@@ -156,9 +157,11 @@ jobs:
         resource-group: ${{ env.rg-name }}
         cluster-name: ${{ env.cluster-name }}
 
+    - run: echo ${{ needs.approve.result }}
+    
     - name: Promote canary
       uses: azure/k8s-deploy@v4
-      if: success()
+      if: ${{ needs.approve.result == 'success' }}
       with:
         manifests: ${{ needs.deploy-canary.outputs.manifestsBundle }}
         namespace: ${{ env.namespace }}
@@ -167,7 +170,7 @@ jobs:
 
     - name: Reject canary
       uses: azure/k8s-deploy@v4
-      if: failure()
+      if: ${{ needs.approve.result == 'failure' }}
       with:
         manifests: ${{ needs.deploy-canary.outputs.manifestsBundle }}
         namespace: ${{ env.namespace }}
