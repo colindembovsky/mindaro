@@ -44,6 +44,7 @@ namespace app
         private static async Task<HttpResponseMessage> doHttpAndLog(HttpRequestMessage message)
         {
             Stopwatch stopWatch = Stopwatch.StartNew();
+            httpClient.DefaultRequestHeaders.ConnectionClose = true;
 
             var response = await httpClient.SendAsync(message);
 
