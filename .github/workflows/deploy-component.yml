@@ -105,7 +105,8 @@ jobs:
         component: ${{ github.event.inputs.component }}
         version: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
 
-    - uses: azure/k8s-bake@v2.2
+    - name: Bake manifest
+      uses: azure/k8s-bake@v2.2
       id: bake
       with:
         renderEngine: helm
@@ -117,7 +118,8 @@ jobs:
           image.repository:ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
           image.tag:${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
         
-    - uses: azure/k8s-deploy@v4
+    - name: Deploy canary
+      uses: azure/k8s-deploy@v4
       with:
         manifests: ${{ steps.bake.outputs.manifestsBundle }}
         namespace: ${{ env.namespace }}
