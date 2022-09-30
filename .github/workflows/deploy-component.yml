@@ -185,6 +185,7 @@ jobs:
       with:
         manifests: ${{ needs.deploy-canary.outputs.manifestsBundle }}
         namespace: ${{ env.namespace }}
+        images: ${{ needs.deploy-canary.outputs.imageRepo }}:${{ needs.deploy-canary.outputs.imageTag }}
         strategy: canary
         action: promote
 
