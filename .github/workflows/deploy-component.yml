@@ -75,7 +75,6 @@ jobs:
     runs-on: ubuntu-20.04
     environment:
       name: ${{ github.event.inputs.environment }}
-      url: http://cdmindaro.southcentralus.cloudapp.azure.com/
 
     outputs:
       manifestsBundle: ${{ steps.bake.outputs.manifestsBundle }}
@@ -131,13 +130,25 @@ jobs:
         action: deploy
         percentage: 50
   
-  promote-canary:
+  approve:
     needs: deploy-canary
-    name: Promote/Reject
+    name: Approval
     runs-on: ubuntu-20.04
     environment:
       name: ${{ github.event.inputs.environment }}
       url: http://cdmindaro.southcentralus.cloudapp.azure.com/
+    
+    steps:
+    - run: echo Approval requested
+
+  promote-reject:
+    name: Promote/Reject
+    needs:
+    - approve
+    - deploy-canary
+    runs-on: ubuntu-20.04
+    environment:
+      name: ${{ github.event.inputs.environment }}
 
     steps:
     - uses: azure/aks-set-context@v3
