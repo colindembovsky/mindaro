@@ -75,6 +75,7 @@ jobs:
     runs-on: ubuntu-20.04
     environment:
       name: ${{ github.event.inputs.environment }}
+      url: http://cdmindaro.southcentralus.cloudapp.azure.com/
 
     outputs:
       manifestsBundle: ${{ steps.bake.outputs.manifestsBundle }}
@@ -101,8 +102,6 @@ jobs:
 
         path="./samples/BikeSharingApp/$component/charts/$compLower/"
         echo "::set-output name=chart-path::$path"
-
-        echo "::set-output name=release-name::$compLower-$version"
       env:
         component: ${{ github.event.inputs.component }}
         version: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
@@ -115,7 +114,6 @@ jobs:
         helm-version: latest
         helmChart: ${{ steps.chart-meta.outputs.chart-path }}
         silent: false
-        #releaseName: ${{ steps.chart-meta.outputs.release-name }}
         releaseName: bikesharingapp
         overrides: |
           image.repository:ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
@@ -135,8 +133,7 @@ jobs:
     name: Approval
     runs-on: ubuntu-20.04
     environment:
-      name: ${{ github.event.inputs.environment }}
-      url: http://cdmindaro.southcentralus.cloudapp.azure.com/
+      name: ${{ github.event.inputs.environment }}-approve
     
     steps:
     - run: echo Approval requested
