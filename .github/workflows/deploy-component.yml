@@ -116,7 +116,8 @@ jobs:
         helm-version: latest
         helmChart: ${{ steps.chart-meta.outputs.chart-path }}
         silent: false
-        releaseName: ${{ steps.chart-meta.outputs.release-name }}
+        #releaseName: ${{ steps.chart-meta.outputs.release-name }}
+        releaseName: bikesharingapp
         overrides: |
           image.repository:ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
           image.tag:${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
