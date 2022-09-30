@@ -132,7 +132,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: manifests
-        path: ${{ runner.temp }}
+        path: ${{ steps.bake.outputs.manifestsBundle }}
   
   approve:
     needs: deploy-canary
