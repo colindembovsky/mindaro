@@ -118,15 +118,15 @@ jobs:
           image.repository:ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
           image.tag:${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
 
-    - name: Delete old dep
-      run: |
-        kubectl delete deployment/bikes --namespace bikeapp
+    # - name: Delete old dep
+    #   run: |
+    #     kubectl delete deployment/bikes --namespace bikeapp
 
-    - name: Deploy stable
-      uses: azure/k8s-deploy@v4
-      with:
-        manifests: ${{ steps.bake.outputs.manifestsBundle }}
-        namespace: ${{ env.namespace }}
+    # - name: Deploy stable
+    #   uses: azure/k8s-deploy@v4
+    #   with:
+    #     manifests: ${{ steps.bake.outputs.manifestsBundle }}
+    #     namespace: ${{ env.namespace }}
     
     - name: Deploy canary
       uses: azure/k8s-deploy@v4
@@ -135,7 +135,4 @@ jobs:
         namespace: ${{ env.namespace }}
         strategy: canary
         action: deploy
-        percentage: 50
-        #traffic-split-method: smi
-        #baseline-and-canary-replicas: 1
-        
+        percentage: 50        
