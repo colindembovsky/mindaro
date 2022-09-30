@@ -132,7 +132,7 @@ jobs:
   
   promote-canary:
     needs: deploy-canary
-    name: Deploy component
+    name: Promote/Reject
     runs-on: ubuntu-20.04
     environment:
       name: ${{ github.event.inputs.environment }}
