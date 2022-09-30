@@ -133,10 +133,9 @@ jobs:
       with:
         manifests: ${{ steps.bake.outputs.manifestsBundle }}
         namespace: ${{ env.namespace }}
-        # below settings for canary deployment
         strategy: canary
         action: deploy
-        traffic-split-method: smi
         percentage: 50
-        baseline-and-canary-replicas: 1
+        #traffic-split-method: smi
+        #baseline-and-canary-replicas: 1
         
