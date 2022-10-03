@@ -20,6 +20,7 @@ env:
   rg-name: cd-mindaro
   cluster-name: cdmindaro
   namespace: bikeapp
+  base-url: cdmindaro.southcentralus.cloudapp.azure.com
 
 jobs:
   build-container:
@@ -75,7 +76,7 @@ jobs:
     runs-on: ubuntu-20.04
     environment:
       name: ${{ github.event.inputs.environment }}
-      url: http://cdmindaro.southcentralus.cloudapp.azure.com/
+      url: http://base-url/
 
     outputs:
       manifestsBundle: ${{ steps.bake.outputs.manifestsBundle }}
@@ -136,6 +137,36 @@ jobs:
         name: manifests
         path: ${{ steps.bake.outputs.manifestsBundle }}
   
+  load-test:
+    name: Azure Load Test
+    needs: deploy-canary
+    runs-on: ubuntu-20.04
+    environment:
+      name: ${{ github.event.inputs.environment }}
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Run load test
+      uses: azure/load-testing@v1
+      with:
+          loadTestConfigFile: samples/BikeSharingApp/tests/${{ github.event.inputs.component }}.jmx
+          loadTestResource: ${{ env.cluster-name }}-load
+          resourceGroup: ${{ env.rg-name }}
+          env: |
+            [
+                {
+                  "name": "baseUrl",
+                  "value": "${{ env.base-url }}"
+                }
+            ]   
+
   approve:
     needs: deploy-canary
     name: Approval
@@ -145,13 +176,14 @@ jobs:
     
     steps:
     - run: echo Approval requested
-
+  
   promote-reject:
     name: Promote/Reject
     if: ${{ always() && !cancelled() }}
     needs:
     - approve
     - deploy-canary
+    - load-test
     runs-on: ubuntu-20.04
     environment:
       name: ${{ github.event.inputs.environment }}
@@ -161,8 +193,6 @@ jobs:
       with:
         name: manifests
         path: ${{ runner.temp }}
-
-    - run: ls -la ${{ runner.temp }}
 
     - uses: azure/login@v1
       with:
@@ -174,10 +204,6 @@ jobs:
       with:
         resource-group: ${{ env.rg-name }}
         cluster-name: ${{ env.cluster-name }}
-
-    - run: echo ${{ needs.approve.result }}
-
-    - run: cat ${{ needs.deploy-canary.outputs.manifestsBundle }}
 
     - name: Promote canary
       uses: azure/k8s-deploy@v4
