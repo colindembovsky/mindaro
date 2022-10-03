@@ -154,19 +154,19 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    # - name: Run load test
-    #   uses: azure/load-testing@v1
-    #   with:
-    #       loadTestConfigFile: samples/BikeSharingApp/tests/${{ github.event.inputs.component }}.yml
-    #       loadTestResource: ${{ env.cluster-name }}-load
-    #       resourceGroup: ${{ env.rg-name }}
-    #       env: |
-    #         [
-    #             {
-    #               "name": "baseUrl",
-    #               "value": "${{ env.base-url }}"
-    #             }
-    #         ]
+    - name: Run load test
+      uses: azure/load-testing@v1
+      with:
+          loadTestConfigFile: samples/BikeSharingApp/tests/${{ github.event.inputs.component }}.yml
+          loadTestResource: ${{ env.cluster-name }}-load
+          resourceGroup: ${{ env.rg-name }}
+          env: |
+            [
+                {
+                  "name": "baseUrl",
+                  "value": "${{ env.base-url }}"
+                }
+            ]
     
     - name: Calculate Load Test URL
       id: load-test-url
@@ -189,7 +189,10 @@ jobs:
     - name: Save load test URL
       run: |
         echo "### Load Test 🧪" >> $GITHUB_STEP_SUMMARY
-        echo "Click [here]($runUrl) to navigate to the load test results in the Azure Portal." >> $GITHUB_STEP_SUMMARY
+        echo "To see the load test results in the Azure Portal, replace `***` with the subscriptionID in the following URL and navigate to it:" >> $GITHUB_STEP_SUMMARY
+        echo "```" >> $GITHUB_STEP_SUMMARY
+        echo "$runUrl" >> $GITHUB_STEP_SUMMARY
+        echo "```" >> $GITHUB_STEP_SUMMARY
         echo "Happy testing!" >> $GITHUB_STEP_SUMMARY
       env:
         runUrl: ${{ steps.load-test-url.outputs.lt-run-url }}
