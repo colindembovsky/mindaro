@@ -1,0 +1,5 @@
+version: v0.1
+testName: BikesTest
+testPlan: Bikes.jmx
+description: 'Bikes Test Run'
+engineInstances: 1
