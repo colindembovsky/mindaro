@@ -167,6 +167,27 @@ jobs:
                   "value": "${{ env.base-url }}"
                 }
             ]
+    
+    - name: Output URL to load test
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          subId=$(az account show --query "id" -o tsv)
+          rg=${{ env.rg-name }}
+          ltName=${{ env.cluster-name }}-load
+          testName=${{ github.event.inputs.component }}test
+
+          # get the data plane URI
+          dataplaneUri=$(az rest --method get --uri "/subscriptions/$subId/resourceGroups/$rg/providers/Microsoft.LoadTestService/loadTests/$ltName?api-version=2022-08-01-preview" --query "properties.dataPlaneURI" -o tsv)
+
+          # get the latest test run URL
+          runUrl=$(az rest --method get --uri "https://$dataplaneUri/testruns/sortAndFilter?orderBy=executedDateTime desc&continuationToken=&search=&testId=$testName&maxPageSize=3&api-version=2022-06-01-preview" --resource "https://loadtest.azure-dev.com" --query "value[0].portalUrl" -o tsv)
+          echo Run URL is: $runUrl
+                    
+          # create a step summary
+          echo "### Load Test 🧪" >> $GITHUB_STEP_SUMMARY
+          echo "Click [here]($runUrl) to navigate to the load test results in the Azure Portal." >> $GITHUB_STEP_SUMMARY
+          echo "Happy testing!" >> $GITHUB_STEP_SUMMARY
 
   approve:
     needs: deploy-canary
