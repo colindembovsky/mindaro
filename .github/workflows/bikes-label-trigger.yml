@@ -26,5 +26,6 @@ jobs:
         deployment-workflow-name: deploy-component.yml
         additional-inputs-json: |
           { 
-            "component": "Bikes"
+            "component": "Bikes",
+            "sha": "${{ github.sha }}"
           }
