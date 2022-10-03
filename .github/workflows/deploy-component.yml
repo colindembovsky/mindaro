@@ -184,7 +184,6 @@ jobs:
     needs:
     - approve
     - deploy-canary
-    - load-test
     runs-on: ubuntu-20.04
     environment:
       name: ${{ github.event.inputs.environment }}
