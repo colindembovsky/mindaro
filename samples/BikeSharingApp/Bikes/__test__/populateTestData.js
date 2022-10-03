@@ -35,8 +35,8 @@ const bikes = [
 ];
 
 module.exports = {
-    populateTestData: function(db, callback) {
-        db.insertMany(bikes, function(err, result) {
+    populateTestData: function(dbCon, callback) {
+        dbCon.collection("bikes").insertMany(bikes, function(err, result) {
             callback(err, result);
         });
     }

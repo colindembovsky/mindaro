@@ -24,7 +24,7 @@ function connectToDb(constr, callback, populateTestData) {
     if (db) {
       dbConnection = db.db(mongoDBDatabase);
       if (populateTestData) {
-        populateTestData(dbConnection.collection(mongoDBCollection), function (err, _) {
+        populateTestData(dbConnection, function (err, _) {
           console.log("Added test data")
           callback(err, dbConnection);
         });
