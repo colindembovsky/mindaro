@@ -70,13 +70,20 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
+    - uses: LouisBrunner/checks-action@v1.1.1
+      if: always()
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Build container image
+        conclusion: ${{ job.status }}
+
   deploy-canary:
     needs: build-container
     name: Deploy component
     runs-on: ubuntu-20.04
     environment:
       name: ${{ github.event.inputs.environment }}
-      url: http://base-url/
+      url: http://${{ env.base-url }}/
 
     outputs:
       manifestsBundle: ${{ steps.bake.outputs.manifestsBundle }}
@@ -136,6 +143,13 @@ jobs:
       with:
         name: manifests
         path: ${{ steps.bake.outputs.manifestsBundle }}
+
+    - uses: LouisBrunner/checks-action@v1.1.1
+      if: always()
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Deploy canary
+        conclusion: ${{ job.status }}
   
   load-test:
     name: Azure Load Test
@@ -156,7 +170,7 @@ jobs:
     - name: Run load test
       uses: azure/load-testing@v1
       with:
-          loadTestConfigFile: samples/BikeSharingApp/tests/${{ github.event.inputs.component }}.jmx
+          loadTestConfigFile: samples/BikeSharingApp/tests/${{ github.event.inputs.component }}.yml
           loadTestResource: ${{ env.cluster-name }}-load
           resourceGroup: ${{ env.rg-name }}
           env: |
@@ -165,7 +179,14 @@ jobs:
                   "name": "baseUrl",
                   "value": "${{ env.base-url }}"
                 }
-            ]   
+            ]
+    
+    - uses: LouisBrunner/checks-action@v1.1.1
+      if: always()
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Load test
+        conclusion: ${{ job.status }}
 
   approve:
     needs: deploy-canary
