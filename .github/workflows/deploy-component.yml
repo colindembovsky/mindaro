@@ -136,7 +136,7 @@ jobs:
           image.tag:${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
 
     - name: Deploy canary
-      uses: azure/k8s-deploy@v4
+      uses: azure/k8s-deploy@v1.5
       with:
         manifests: ${{ steps.bake.outputs.manifestsBundle }}
         namespace: ${{ env.namespace }}
@@ -237,7 +237,7 @@ jobs:
         cluster-name: ${{ env.cluster-name }}
 
     - name: Promote canary
-      uses: azure/k8s-deploy@v4
+      uses: azure/k8s-deploy@v1.5
       if: ${{ needs.approve.result == 'success' }}
       with:
         manifests: ${{ needs.deploy-canary.outputs.manifestsBundle }}
@@ -247,7 +247,7 @@ jobs:
         action: promote
 
     - name: Reject canary
-      uses: azure/k8s-deploy@v4
+      uses: azure/k8s-deploy@v1.5
       if: ${{ needs.approve.result == 'failure' }}
       with:
         manifests: ${{ needs.deploy-canary.outputs.manifestsBundle }}
