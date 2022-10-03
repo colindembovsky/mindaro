@@ -82,3 +82,9 @@ resource "time_sleep" "wait_30_seconds_for_rbac" {
 
   create_duration = "30s"
 }
+
+resource "azurerm_load_test" "load_test" {
+  name                = "${var.cluster_name}-load"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+}
