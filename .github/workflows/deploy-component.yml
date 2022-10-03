@@ -10,9 +10,6 @@ on:
       component:
         description: The component to deploy
         required: true
-      sha:
-        description: The sha to link to
-        required: true
 
 permissions:
   id-token: write
@@ -73,15 +70,6 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-
-    - name: Link check
-      uses: LouisBrunner/checks-action@v1.1.1
-      if: always()
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        sha: ${{ github.event.inputs.sha }}
-        name: Build container image
-        conclusion: ${{ job.status }}
 
   deploy-canary:
     needs: build-container
@@ -150,15 +138,6 @@ jobs:
         name: manifests
         path: ${{ steps.bake.outputs.manifestsBundle }}
 
-    - name: Link check
-      uses: LouisBrunner/checks-action@v1.1.1
-      if: always()
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        sha: ${{ github.event.inputs.sha }}
-        name: Deploy canary
-        conclusion: ${{ job.status }}
-  
   load-test:
     name: Azure Load Test
     needs: deploy-canary
@@ -188,15 +167,6 @@ jobs:
                   "value": "${{ env.base-url }}"
                 }
             ]
-    
-    - name: Link check
-      uses: LouisBrunner/checks-action@v1.1.1
-      if: always()
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        sha: ${{ github.event.inputs.sha }}
-        name: Load test
-        conclusion: ${{ job.status }}
 
   approve:
     needs: deploy-canary
