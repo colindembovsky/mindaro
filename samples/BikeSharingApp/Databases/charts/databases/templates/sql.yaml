@@ -40,6 +40,9 @@ spec:
           requests:
             cpu: 400m
             memory: 2Gi
+          limits:
+            cpu: 400m
+            memory: 2Gi
         volumeMounts:
           - name: data
             mountPath: /var/opt/mssql
