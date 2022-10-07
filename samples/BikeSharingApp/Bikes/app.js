@@ -199,11 +199,33 @@ function handleGetBike(req, res) {
 
         var theBike = result;
         // Hard code image url *FIX ME*
-        theBike.imageUrl = "/static/logo.svg";
+        //theBike.imageUrl = "/static/logo.svg";
         theBike.id = theBike._id;
         delete theBike._id;
 
         res.send(theBike);
+    });
+}
+
+// get bike by type ------------------------------------------------------------
+function handleGetBikesByType(req, res) {
+    var requestID = req.header(requestIDHeaderName);
+
+    const query = { $where: "this.type == '" + req.params.type + "'" };
+    
+    var cursor = getDb().find(query).sort({ hourlyCost: 1 }).limit(30);
+    cursor.toArray(function(err, data) {
+        if (err) {
+            dbError(res, err, requestID);
+            return;
+        }
+
+        data.forEach(function(bike) {
+            bike.id = bike._id;
+            delete bike._id;
+        });
+
+        res.send(data);
     });
 }
 
@@ -327,6 +349,7 @@ router.get('/api/allbikes', handleGetAllBikes);
 router.post('/api/bikes', handlePostBikes);
 router.put('/api/bikes/:bikeId', handlePutBike);
 router.get('/api/bikes/:bikeId', handleGetBike);
+router.get('/api/bikesByType/:type', handleGetBikesByType);
 router.delete('/api/bikes/:bikeId', handleDeleteBike);
 router.patch('/api/bikes/:bikeId/reserve', handleReserveBike);
 router.patch('/api/bikes/:bikeId/clear', handlePatchBike);
