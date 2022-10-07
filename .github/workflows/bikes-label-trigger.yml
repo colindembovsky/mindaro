@@ -16,9 +16,6 @@ jobs:
       github.event.label.name == 'deploy to test'
     
     steps:
-    - name: Checkout Sources
-      uses: actions/checkout@v3
-
     - name: Create deployment from label
       id: create-deploy
       uses: colindembovsky/deployment-lifecycle-actions/create-deployment-from-label@v1
