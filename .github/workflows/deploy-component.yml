@@ -41,7 +41,8 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         check_id: ${{ steps.check_in_progress.outputs.check_id }}
-        status: ${{ job.status }}
+        status: completed
+        conclusion: ${{ job.status }}
   
   # build-container:
   #   name: Build component image
