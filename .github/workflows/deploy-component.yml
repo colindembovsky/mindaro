@@ -24,202 +24,220 @@ env:
   base-url: cdmindaro.southcentralus.cloudapp.azure.com
 
 jobs:
-  build-container:
-    name: Build component image
-    runs-on: ubuntu-20.04
-
-    outputs:
-      container-meta-json: ${{ steps.meta.outputs.json }}
-
+  test:
+    runs-on: ubuntu-22.04
     steps:
-    - name: Login to GHCR
-      uses: docker/login-action@v2
+    - uses: LouisBrunner/checks-action@v1.3.1
+      id: check_in_progress
       with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Build images
+        status: in_progress
     
-    - name: Calculate chart path
-      id: component-lower
-      run: |
-        # calculate the path to the chart for this component
-        compLower=$(echo $component | tr '[:upper:]' '[:lower:]')
-        echo "::set-output name=lower-name::$compLower"
-      env:
-        component: ${{ github.event.inputs.component }}
+    - run: sleep 2000
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    
-    - name: Generate docker metadata
-      id: meta
-      uses: docker/metadata-action@v4
+    - uses: LouisBrunner/checks-action@v1.3.1
       with:
-        images: ghcr.io/${{ github.repository }}/bikesharing-${{ steps.component-lower.outputs.lower-name }}
-        tags: |
-          type=ref,event=tag
-          type=ref,event=pr
-          type=sha,event=branch,prefix=,suffix=,format=short
+        token: ${{ secrets.GITHUB_TOKEN }}
+        check_id: ${{ steps.check_in_progress.outputs.check_id }}
+        status: complete
   
-    - name: Build and Push Docker Image
-      uses: docker/build-push-action@v2
-      with:
-        push: true
-        context: "{{defaultContext}}:/samples/BikeSharingApp/${{ github.event.inputs.component }}"
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+  # build-container:
+  #   name: Build component image
+  #   runs-on: ubuntu-20.04
 
-  deploy-canary:
-    needs: build-container
-    name: Deploy component
-    runs-on: ubuntu-20.04
-    environment:
-      name: ${{ github.event.inputs.environment }}
-      url: http://${{ env.base-url }}/
+  #   outputs:
+  #     container-meta-json: ${{ steps.meta.outputs.json }}
 
-    outputs:
-      manifestsBundle: ${{ steps.bake.outputs.manifestsBundle }}
-      imageRepo: ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
-      imageTag: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - uses: azure/login@v1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-    - uses: azure/aks-set-context@v3
-      with:
-        resource-group: ${{ env.rg-name }}
-        cluster-name: ${{ env.cluster-name }}
-
-    - name: Calculate chart path
-      id: chart-meta
-      run: |
-        compLower=$(echo $component | tr '[:upper:]' '[:lower:]')
-        echo "::set-output name=lower-name::$compLower"
-
-        path="./samples/BikeSharingApp/$component/charts/$compLower/"
-        echo "::set-output name=chart-path::$path"
-      env:
-        component: ${{ github.event.inputs.component }}
-        version: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
-
-    - name: Bake manifest
-      uses: azure/k8s-bake@v2.2
-      id: bake
-      with:
-        renderEngine: helm
-        helm-version: latest
-        helmChart: ${{ steps.chart-meta.outputs.chart-path }}
-        silent: false
-        releaseName: bikesharingapp
-        overrides: |
-          image.repository:ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
-          image.tag:${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
-
-    - name: Deploy canary
-      uses: azure/k8s-deploy@v1.5
-      with:
-        manifests: ${{ steps.bake.outputs.manifestsBundle }}
-        namespace: ${{ env.namespace }}
-        strategy: canary
-        action: deploy
-        percentage: 50
-
-    - name: Save deployment manifests
-      uses: actions/upload-artifact@v3
-      with:
-        name: manifests
-        path: ${{ steps.bake.outputs.manifestsBundle }}
-
-  load-test:
-    name: Azure Load Test
-    needs: deploy-canary
-    runs-on: ubuntu-20.04
-    environment:
-      name: ${{ github.event.inputs.environment }}
+  #   steps:
+  #   - name: Login to GHCR
+  #     uses: docker/login-action@v2
+  #     with:
+  #       registry: ghcr.io
+  #       username: ${{ github.actor }}
+  #       password: ${{ secrets.GITHUB_TOKEN }}
     
-    steps:
-    - uses: actions/checkout@v2
-    
-    - uses: azure/login@v1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #   - name: Calculate chart path
+  #     id: component-lower
+  #     run: |
+  #       # calculate the path to the chart for this component
+  #       compLower=$(echo $component | tr '[:upper:]' '[:lower:]')
+  #       echo "::set-output name=lower-name::$compLower"
+  #     env:
+  #       component: ${{ github.event.inputs.component }}
 
-    - name: Run load test
-      uses: azure/load-testing@v1
-      with:
-          loadTestConfigFile: samples/BikeSharingApp/tests/${{ github.event.inputs.component }}.yml
-          loadTestResource: ${{ env.cluster-name }}-load
-          resourceGroup: ${{ env.rg-name }}
-          env: |
-            [
-                {
-                  "name": "baseUrl",
-                  "value": "${{ env.base-url }}"
-                }
-            ]
-
-  approve:
-    needs: deploy-canary
-    name: Approval
-    runs-on: ubuntu-20.04
-    environment:
-      name: ${{ github.event.inputs.environment }}-approve
+  #   - name: Set up Docker Buildx
+  #     uses: docker/setup-buildx-action@v2
     
-    steps:
-    - run: echo Approval requested
+  #   - name: Generate docker metadata
+  #     id: meta
+  #     uses: docker/metadata-action@v4
+  #     with:
+  #       images: ghcr.io/${{ github.repository }}/bikesharing-${{ steps.component-lower.outputs.lower-name }}
+  #       tags: |
+  #         type=ref,event=tag
+  #         type=ref,event=pr
+  #         type=sha,event=branch,prefix=,suffix=,format=short
   
-  promote-reject:
-    name: Promote/Reject
-    if: ${{ always() && !cancelled() }}
-    needs:
-    - approve
-    - deploy-canary
-    runs-on: ubuntu-20.04
-    environment:
-      name: ${{ github.event.inputs.environment }}
+  #   - name: Build and Push Docker Image
+  #     uses: docker/build-push-action@v2
+  #     with:
+  #       push: true
+  #       context: "{{defaultContext}}:/samples/BikeSharingApp/${{ github.event.inputs.component }}"
+  #       tags: ${{ steps.meta.outputs.tags }}
+  #       labels: ${{ steps.meta.outputs.labels }}
+  #       cache-from: type=gha
+  #       cache-to: type=gha,mode=max
 
-    steps:
-    - uses: actions/download-artifact@v3
-      with:
-        name: manifests
-        path: ${{ runner.temp }}
+  # deploy-canary:
+  #   needs: build-container
+  #   name: Deploy component
+  #   runs-on: ubuntu-20.04
+  #   environment:
+  #     name: ${{ github.event.inputs.environment }}
+  #     url: http://${{ env.base-url }}/
 
-    - uses: azure/login@v1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #   outputs:
+  #     manifestsBundle: ${{ steps.bake.outputs.manifestsBundle }}
+  #     imageRepo: ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
+  #     imageTag: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
+
+  #   steps:
+  #   - uses: actions/checkout@v2
+
+  #   - uses: azure/login@v1
+  #     with:
+  #       client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #       tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #       subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+  #   - uses: azure/aks-set-context@v3
+  #     with:
+  #       resource-group: ${{ env.rg-name }}
+  #       cluster-name: ${{ env.cluster-name }}
+
+  #   - name: Calculate chart path
+  #     id: chart-meta
+  #     run: |
+  #       compLower=$(echo $component | tr '[:upper:]' '[:lower:]')
+  #       echo "::set-output name=lower-name::$compLower"
+
+  #       path="./samples/BikeSharingApp/$component/charts/$compLower/"
+  #       echo "::set-output name=chart-path::$path"
+  #     env:
+  #       component: ${{ github.event.inputs.component }}
+  #       version: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
+
+  #   - name: Bake manifest
+  #     uses: azure/k8s-bake@v2.2
+  #     id: bake
+  #     with:
+  #       renderEngine: helm
+  #       helm-version: latest
+  #       helmChart: ${{ steps.chart-meta.outputs.chart-path }}
+  #       silent: false
+  #       releaseName: bikesharingapp
+  #       overrides: |
+  #         image.repository:ghcr.io/${{ github.repository }}/bikesharing-${{ steps.chart-meta.outputs.lower-name }}
+  #         image.tag:${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
+
+  #   - name: Deploy canary
+  #     uses: azure/k8s-deploy@v1.5
+  #     with:
+  #       manifests: ${{ steps.bake.outputs.manifestsBundle }}
+  #       namespace: ${{ env.namespace }}
+  #       strategy: canary
+  #       action: deploy
+  #       percentage: 50
+
+  #   - name: Save deployment manifests
+  #     uses: actions/upload-artifact@v3
+  #     with:
+  #       name: manifests
+  #       path: ${{ steps.bake.outputs.manifestsBundle }}
+
+  # load-test:
+  #   name: Azure Load Test
+  #   needs: deploy-canary
+  #   runs-on: ubuntu-20.04
+  #   environment:
+  #     name: ${{ github.event.inputs.environment }}
     
-    - uses: azure/aks-set-context@v3
-      with:
-        resource-group: ${{ env.rg-name }}
-        cluster-name: ${{ env.cluster-name }}
+  #   steps:
+  #   - uses: actions/checkout@v2
+    
+  #   - uses: azure/login@v1
+  #     with:
+  #       client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #       tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #       subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - name: Promote canary
-      uses: azure/k8s-deploy@v1.5
-      if: ${{ needs.approve.result == 'success' }}
-      with:
-        manifests: ${{ needs.deploy-canary.outputs.manifestsBundle }}
-        namespace: ${{ env.namespace }}
-        images: ${{ needs.deploy-canary.outputs.imageRepo }}:${{ needs.deploy-canary.outputs.imageTag }}
-        strategy: canary
-        action: promote
+  #   - name: Run load test
+  #     uses: azure/load-testing@v1
+  #     with:
+  #         loadTestConfigFile: samples/BikeSharingApp/tests/${{ github.event.inputs.component }}.yml
+  #         loadTestResource: ${{ env.cluster-name }}-load
+  #         resourceGroup: ${{ env.rg-name }}
+  #         env: |
+  #           [
+  #               {
+  #                 "name": "baseUrl",
+  #                 "value": "${{ env.base-url }}"
+  #               }
+  #           ]
 
-    - name: Reject canary
-      uses: azure/k8s-deploy@v1.5
-      if: ${{ needs.approve.result == 'failure' }}
-      with:
-        manifests: ${{ needs.deploy-canary.outputs.manifestsBundle }}
-        namespace: ${{ env.namespace }}
-        strategy: canary
-        action: reject
+  # approve:
+  #   needs: deploy-canary
+  #   name: Approval
+  #   runs-on: ubuntu-20.04
+  #   environment:
+  #     name: ${{ github.event.inputs.environment }}-approve
+    
+  #   steps:
+  #   - run: echo Approval requested
+  
+  # promote-reject:
+  #   name: Promote/Reject
+  #   if: ${{ always() && !cancelled() }}
+  #   needs:
+  #   - approve
+  #   - deploy-canary
+  #   runs-on: ubuntu-20.04
+  #   environment:
+  #     name: ${{ github.event.inputs.environment }}
+
+  #   steps:
+  #   - uses: actions/download-artifact@v3
+  #     with:
+  #       name: manifests
+  #       path: ${{ runner.temp }}
+
+  #   - uses: azure/login@v1
+  #     with:
+  #       client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #       tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #       subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    
+  #   - uses: azure/aks-set-context@v3
+  #     with:
+  #       resource-group: ${{ env.rg-name }}
+  #       cluster-name: ${{ env.cluster-name }}
+
+  #   - name: Promote canary
+  #     uses: azure/k8s-deploy@v1.5
+  #     if: ${{ needs.approve.result == 'success' }}
+  #     with:
+  #       manifests: ${{ needs.deploy-canary.outputs.manifestsBundle }}
+  #       namespace: ${{ env.namespace }}
+  #       images: ${{ needs.deploy-canary.outputs.imageRepo }}:${{ needs.deploy-canary.outputs.imageTag }}
+  #       strategy: canary
+  #       action: promote
+
+  #   - name: Reject canary
+  #     uses: azure/k8s-deploy@v1.5
+  #     if: ${{ needs.approve.result == 'failure' }}
+  #     with:
+  #       manifests: ${{ needs.deploy-canary.outputs.manifestsBundle }}
+  #       namespace: ${{ env.namespace }}
+  #       strategy: canary
+  #       action: reject
