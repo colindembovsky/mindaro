@@ -1,6 +1,6 @@
 # Cloud Native CodeSpaces Development
 
-Developing cloud native applications can be challenging for the "inner loop". CodeSpaces allows developers to set up a full, config-as-code development environment in the cloud that developers can connect to with a browser.
+Developing cloud native applications can be challenging for the "inner loop". Codespaces allows developers to set up a full, config-as-code development environment in the cloud that developers can connect to with a browser. This demo shows how to run a complex, fully-featured application (including debugging) in Codepaces.
 
 ### Config
 
@@ -11,62 +11,69 @@ This image includes:
 - Azure CLI
 - NodeJS
 - DotNet
+- Building the microservices in the solution
+- Deploying `traefik` ingress controller
+- Deploying the `helm` chart of the application
+
+When a user starts up the Codespace, they should have a complete, working application from the start! They can now get productive immediately.
 
 ### Commands
 
 Various commands are stored in the `launch.json` and `tasks.json` files in the `.vscode` folder. These incluse commands to:
 - build docker images
 - deploy helm charts
-- port-forward for debugging
+- port-forward for testing/debugging
 
-## Script
+## Problem
 
-### Problem
+This repo was copied from [Microsoft Mindaro](https://github.com/microsoft/mindaro). How would you start developing against the BikeSharingApp if you just joined the team?
 
-If you browse to this repo on the `main` branch, you will see that it has a couple of sample applications. Getting started looks intimidating since there is NodeJS, DotNet and Go code in the BikeSharing app. There is a `bridge-quickstart.sh` script, but this looks like it only works if you have the application running in an AKS cluster! How do you do local development for this application?
+Let's navigate to the [Microsoft Mindaro](https://github.com/microsoft/mindaro) and open a Codespace on the default branch.
 
-Digging in a little, we see a `configure.sh` script. There are quite a few commands there, including running `minikube`, `kubectl` and `helm`. We don't see how to build the containers.
+When the Codespace opens, you will see that it has a couple of sample applications (the focus of this demo is the [BikeSharingApp](./samples/BikeSharingApp). Getting started looks intimidating since there is NodeJS, DotNet and Go code in the app. There is a `bridge-quickstart.sh` script, but this looks like it only works if you have the application running in an AKS cluster! How do you do _local development_ for this application?
 
-### Step 1: Open `main` in a CodeSpace
+Digging in a little, we see a `configure.sh` script. There are quite a few commands there, including running `minikube`, `kubectl` and `helm`. There are no commands that tell you how to even build the containers.
 
-1. Show the files and the terminal. Run `dotnet` to show that the terminal actually works!
-1. Show how the apps are container apps - there are plenty of `Dockerfiles`
-> TODO
-1. Add the `devcontainer` config in the command palette and build a docker environment
-1. Run `minikube start` to spin up a k8s environment
-1. Run `dockercompose build` to show building the containers
-1. ?? Try run `node` - no bueno, so we could enhance the container
+We could write a cleaner "setup" script that would guide the user to set up a local development environment. Ideally we need to:
 
-All this is great - but we can codify these steps and make it even easier for the dev team.
+- Create a minikube cluster that can run the microservices
+- Create a `traefik` ingress controller, since that is how the application runs in production
+- Deploy the images to a k8s cluster
+- Build the container images
+- Enable debugging for development
 
-### Step 2: Open `<other>` in a CodeSpace (do this before the demo to warm it up)
+We can do this all through code so that developers don't have to!
 
-1. Show how we've enhanced the `devcontainer.json` file and `Dockerfile` to create the full environment.
-1. Show the command palette `Run Task` commands
-1. Make sure minikube is running (`k get po`). Run `minikube start` if not
-1. Run Task -> helm deploy
-1. Run Task -> k8s: fwd dashboard - browse to it
-1. Run Task -> k8s: fwd ingress - browse to it
+## Solution
+
+Shut down the Codespace running on the Microsoft repo and return to this repo. Open a Codespace on `main` - give it as much CPU as you can (at least 4 CPUs).
+
+1. Examine the `devcontainer.json` file and `Dockerfile` that was used to create the full environment.
+1. Hit Cntr/Cmd-P and type `Run Task` - see the commands that are preconfigured for the user
+1. Examine the containers that are running by typing `k get po` in the terminal.
+2. If there are no containers or there are errors, you can run `minikube start`
+3. Run Task -> helm deploy
+4. Run Task -> k8s: fwd dashboard - browse to it (you have to add `/dashboard/` to the URL to get to the `traefik` dashboard once the browser opens)
+5. Run Task -> k8s: fwd ingress - browse to it to see the running application. You can log in as either User and see the bikes.
 
 All this is great - but how do we debug?
 
-### Step 3: Local nodejs debug
+## Local nodejs debug
 
-1. Debug -> Launch nodejs. Switch to the `DEBUG CONSOLE` and see that the app fails to start
-1. Since we have mondoDB running in the minikube cluster, we can use that!
-1. Run Task -> k8s: fwd mongo and relaunch nodejs
-1. Open `samples/BikeSharingApp/Bikes/server.js` and set a breakpoint at the `app.get('/api/allbikes')` function (around line 126)
+We can debug code from within the Codespace.
+
+1. Click `Debug`, change the profile to `Launch nodejs` and press the `Play` button.
+1. Switch to the `DEBUG CONSOLE` and after about 30 seconds you will see that the app fails to start. It is trying to connect to a mongoDB but there isn't one at the address it is trying.
+1. Since we have mondoDB running in the minikube cluster, we can use that! Use the Command Palette to `Run Task -> k8s: fwd mongo` and relaunch nodejs in the Debug tab
+1. Open [samples/BikeSharingApp/Bikes/app.js](samples/BikeSharingApp/Bikes/app.js) and set a breakpoint at `function handleGetAvailableBikes()` (around line 62)
+1. The application is running on port 3000.
 1. Open a terminal and run
     ```sh
     curl -H"x-contoso-request-id:e6192a2d-7745-4f5f-a76b-5d88e71a5dff" localhost:3000/api/allbikes
     ```
+1. You should see your breakpoint hit.
 
-1. Put:
-    ```sh
-    curl -H"x-contoso-request-id:e6192a2d-7745-4f5f-a76b-5d88e71a5dff" -H"Content-Type: application/json" -X POST -d '{"model": "Womens Cruiser","hourlyCost":1.00,"type": "tandem","address":"1907 18th Ave S, Seattle, WA 98144","ownerUserId":"16a46619738a4865a5afcb5e18ffb138","suitableHeightInMeters":1.7,"maximumWeightInKg":150,"imageUrl":"https://raw.githubusercontent.com/microsoft/mindaro/master/samples/BikeSharingApp/Assets/sample-bike-01.jpg"}' localhost:3000/api/bikes
-    ```
-
-All this is great - but what if want to debug inside the container?
+This is great - but what if want to debug _inside the container_?
 
 ### Step 4: Local container debug
 
