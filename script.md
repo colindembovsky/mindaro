@@ -75,23 +75,12 @@ We can debug code from within the Codespace.
 
 This is great - but what if want to debug _inside the container_?
 
-### Step 4: Local container debug
+## Local container debug
 
-1. Run Task -> k8s: fwd ingress
-1. Debug -> Launch "Attach Kubernetes (core)"
-1. When it is attached, set a breakpoint in `samples/BikeSharingApp/ReservationEngine/Controllers/ReservationEngineController.cs` in the `UpdateReservation()` method
-1. Browse to the website and log in as Arelia Briggs.
-1. Click on a bike and click "Reserve"
-
-All this is great - but what if we want to debug to an instance of the service in a "real" cluster?
-
-### Step 5: AKS debug using Bridge
-
-We can use `Bridge to K8s` to connect to a K8s cluster - including redirecting traffic to a single application.
-
-### Infra as Code
-
-```sh
-cd samples/BikeSharingApp/Infrastructure
-tf plan
-```
+1. In the command palette, `Run Task -> k8s: fwd ingress` to forward the ingress service.
+1. Now run `Debug -> Launch "Attach Kubernetes (core)"`. This will attach the code from the Codespace to a running container.
+1. When prompted, select `ReservationEngine` as the project to debug. Then in the list of containers, select the `ReservationEngine` pod.
+3. When it is attached, set a breakpoint in [samples/BikeSharingApp/ReservationEngine/Controllers/ReservationEngineController.cs](samples/BikeSharingApp/ReservationEngine/Controllers/ReservationEngineController.cs) in the `UpdateReservation()` method.
+4. Browse to the website that opened in step 1 and log in as Arelia Briggs.
+5. Click on a bike and click "Reserve".
+6. You should hit the breakpoint and can debug the code that is running inside the container.
