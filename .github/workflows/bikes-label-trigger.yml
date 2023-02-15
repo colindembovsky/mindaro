@@ -21,7 +21,7 @@ jobs:
 
     - name: Create deployment from label
       id: create-deploy
-      uses: colindembovsky/deployment-lifecycle-actions/create-deployment-from-label@v1
+      uses: colindembovsky/deployment-lifecycle-actions-classic/create-deployment-from-label@v1
       with:
         deployment-workflow-name: deploy-component.yml
         additional-inputs-json: |
