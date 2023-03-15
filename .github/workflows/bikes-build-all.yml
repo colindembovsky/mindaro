@@ -31,8 +31,8 @@ jobs:
     - name: Docker pull
       run: docker-compose pull
 
-    - name: Docker Layer Caching
-      uses: satackey/action-docker-layer-caching@v0.0.11
+    #- name: Docker Layer Caching
+    #  uses: satackey/action-docker-layer-caching@v0.0.11
 
     - name: Build and push the images
       run: |
