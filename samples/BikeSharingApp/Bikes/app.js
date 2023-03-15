@@ -198,8 +198,6 @@ function handleGetBike(req, res) {
         }
 
         var theBike = result;
-        // Hard code image url *FIX ME*
-        theBike.imageUrl = "/static/logo.svg";
         theBike.id = theBike._id;
         delete theBike._id;
 
