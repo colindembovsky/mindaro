@@ -16,12 +16,6 @@ jobs:
         working-directory: samples/BikeSharingApp/Bikes/
 
     steps:
-    - name: Collect Workflow Telemetry
-      uses: runforesight/foresight-workflow-kit-action@v1
-      if: success() || failure()
-      with:
-        api_key: ${{ secrets.FORESIGHT_API_KEY }}
-        
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -44,17 +38,6 @@ jobs:
           output: report-markdown
           annotations: none
           working-directory: samples/BikeSharingApp/Bikes
-    
-    - name: Analyze Test and/or Coverage Results
-      uses: runforesight/foresight-test-kit-action@v1
-      if: success() || failure()
-      with:
-        api_key: ${{ secrets.FORESIGHT_API_KEY }}
-        test_format: JUNIT
-        test_framework: JEST
-        test_path: ./samples/BikeSharingApp/Bikes/reports
-        coverage_format: 'COBERTURA/XML'
-        coverage_path: ./samples/BikeSharingApp/Bikes/coverage
     
     - uses: marocchino/sticky-pull-request-comment@v2
       with:
