@@ -44,7 +44,7 @@ jobs:
       run: |
         # calculate the path to the chart for this component
         compLower=$(echo $component | tr '[:upper:]' '[:lower:]')
-        echo "::set-output name=lower-name::$compLower"
+        echo "lower-name=$compLower" >> $GITHUB_OUTPUT
       env:
         component: ${{ github.event.inputs.component }}
 
@@ -109,10 +109,10 @@ jobs:
       id: chart-meta
       run: |
         compLower=$(echo $component | tr '[:upper:]' '[:lower:]')
-        echo "::set-output name=lower-name::$compLower"
+        echo "lower-name=$compLower" >> $GITHUB_OUTPUT
 
         path="./samples/BikeSharingApp/$component/charts/$compLower/"
-        echo "::set-output name=chart-path::$path"
+        echo "chart-path=$path" >> $GITHUB_OUTPUT
       env:
         component: ${{ github.event.inputs.component }}
         version: ${{ fromJSON(needs.build-container.outputs.container-meta-json).labels['org.opencontainers.image.version'] }}
