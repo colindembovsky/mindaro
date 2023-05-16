@@ -132,6 +132,8 @@ Bowse to the application after deployment (so you've run the Infra workflow and 
 // Hard code image url *FIX ME*
 theBike.imageUrl = "/static/logo.svg";
 ```
+
+Test
 Comment out the 2nd line (`theBike.imageUrl...`) and commit and push the change onto a branch.
 
 2. Create a PR on the branch you just created.
